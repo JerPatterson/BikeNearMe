@@ -1,11 +1,11 @@
 import 'package:bike_near_me/widgets/map.dart';
 import 'package:flutter/material.dart';
 
-enum Markers implements Comparable<Markers> {
+enum MarkerType implements Comparable<MarkerType> {
   bikes(name: "bikes", otherName: "docks", icon: Icon(Icons.pedal_bike)),
   docks(name: "docks", otherName: "bikes", icon: Icon(Icons.local_parking));
 
-  const Markers({
+  const MarkerType({
     required this.name,
     required this.otherName,
     required this.icon,
@@ -16,7 +16,7 @@ enum Markers implements Comparable<Markers> {
   final Icon icon;
 
   @override
-  int compareTo(Markers other) => name.compareTo(other.name);
+  int compareTo(MarkerType other) => name.compareTo(other.name);
 }
 
 class HomePage extends StatefulWidget {
@@ -29,12 +29,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Markers _markersDisplayed = Markers.bikes;
+  MarkerType _markerTypeDisplayed = MarkerType.bikes;
 
-  void _switchDisplayedMarkers() {
+  void _switchDisplayedMarkerType() {
     setState(() {
-      _markersDisplayed = _markersDisplayed == Markers.bikes ?
-        Markers.docks : Markers.bikes;
+      _markerTypeDisplayed = _markerTypeDisplayed == MarkerType.bikes ?
+        MarkerType.docks : MarkerType.bikes;
     });
   }
 
@@ -47,9 +47,9 @@ class _HomePageState extends State<HomePage> {
       ),
       body: const MapWidget(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _switchDisplayedMarkers,
-        tooltip: 'Display ${_markersDisplayed.otherName} instead',
-        child: _markersDisplayed.icon,
+        onPressed: _switchDisplayedMarkerType,
+        tooltip: 'Display ${_markerTypeDisplayed.otherName} instead',
+        child: _markerTypeDisplayed.icon,
       ),
     );
   }
