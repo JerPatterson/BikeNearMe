@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:bike_near_me/pages/home.dart';
+import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(const MyApp());

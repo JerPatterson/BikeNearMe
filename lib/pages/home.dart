@@ -1,3 +1,4 @@
+import 'package:bike_near_me/widgets/map.dart';
 import 'package:flutter/material.dart';
 
 enum Markers implements Comparable<Markers> {
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Container(),
+      body: const MapWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: _switchDisplayedMarkers,
         tooltip: 'Display ${_markersDisplayed.otherName} instead',
