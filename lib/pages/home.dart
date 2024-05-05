@@ -24,7 +24,6 @@ class HomePage extends StatefulWidget {
 
   final String title;
   
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
