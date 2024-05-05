@@ -7,28 +7,31 @@ import 'package:latlong2/latlong.dart';
 class MapWidget extends StatelessWidget {
   const MapWidget({super.key});
 
-@override
-Widget build(BuildContext context) {
-  return FlutterMap(
-    options: const MapOptions(
-      initialCenter: LatLng(51.509364, -0.128928),
-      initialZoom: 9.2,
-    ),
-    children: [
-      TileLayer(
-        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        userAgentPackageName: 'com.example.app',
-        tileProvider: CancellableNetworkTileProvider(),
+  @override
+  Widget build(BuildContext context) {
+    MapController mapController = MapController();
+
+    return FlutterMap(
+      mapController: mapController,
+      options: const MapOptions(
+        initialCenter: LatLng(45.504789, -73.613187),
+        initialZoom: 12,
       ),
-      RichAttributionWidget(
-        attributions: [
-          TextSourceAttribution(
-            'OpenStreetMap contributors',
-            onTap: () => {},
-          ),
-        ],
-      ),
-    ],
-  );
-}
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.example.app',
+          tileProvider: CancellableNetworkTileProvider(),
+        ),
+        RichAttributionWidget(
+          attributions: [
+            TextSourceAttribution(
+              'OpenStreetMap contributors',
+              onTap: () => {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
