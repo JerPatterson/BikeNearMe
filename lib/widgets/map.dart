@@ -4,7 +4,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 
-const initialZoom = 12.0;
+const minZoom = 10.0;
+const maxZoom = 20.0;
+const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
 
 class MapWidget extends StatefulWidget {
@@ -51,6 +53,8 @@ class _MapWidgetState extends State<MapWidget> {
       options: MapOptions(
         initialCenter: initialCenter,
         initialZoom: initialZoom,
+        minZoom: minZoom,
+        maxZoom: maxZoom,
         onPositionChanged: updateMarkers,
       ),
       children: [
