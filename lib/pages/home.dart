@@ -84,32 +84,32 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title),
       ),
       body: FlutterMap(
-      options: MapOptions(
-        initialCenter: initialCenter,
-        initialZoom: initialZoom,
-        minZoom: minZoom,
-        maxZoom: maxZoom,
-        onPositionChanged: updateMarkers,
+        options: MapOptions(
+          initialCenter: initialCenter,
+          initialZoom: initialZoom,
+          minZoom: minZoom,
+          maxZoom: maxZoom,
+          onPositionChanged: updateMarkers,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.app',
+            tileProvider: CancellableNetworkTileProvider(),
+          ),
+          MarkerLayer(
+            markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+          ),
+          RichAttributionWidget(
+            attributions: [
+              TextSourceAttribution(
+                'OpenStreetMap contributors',
+                onTap: () => {},
+              ),
+            ],
+          ),
+        ],
       ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.app',
-          tileProvider: CancellableNetworkTileProvider(),
-        ),
-        MarkerLayer(
-          markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-        ),
-        RichAttributionWidget(
-          attributions: [
-            TextSourceAttribution(
-              'OpenStreetMap contributors',
-              onTap: () => {},
-            ),
-          ],
-        ),
-      ],
-    ),
       floatingActionButton: FloatingActionButton(
         onPressed: _switchDisplayedMarkerType,
         tooltip: 'Display ${_markerTypeDisplayed.otherName} instead',
