@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "911301890092",
+    "firebase_url": "https://bikenearme-a33ac-default-rtdb.firebaseio.com",
+    "project_id": "bikenearme-a33ac",
+    "storage_bucket": "bikenearme-a33ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911301890092:android:08536bb1a0431a3c898189",
+        "android_client_info": {
+          "package_name": "com.example.bike_near_me"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQUiPNlt4S6noSWswbIlBpblET7wvDEnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
