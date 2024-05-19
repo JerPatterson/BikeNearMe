@@ -19,10 +19,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  LatLng _center = initialCenter;
   final List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
-  //final Set<String> _knownOperators = {};
 
   void updateMarkers(MapPosition position, bool _) {
     double latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
@@ -33,12 +31,11 @@ class _HomePageState extends State<HomePage> {
     
     setState(() {
       _knownPositions.add(positionString);
-      _center = LatLng(latitude, longitude);
       _markers.add(
         Marker(
           width: 100.0,
           height: 100.0,
-          point: _center,
+          point: LatLng(latitude, longitude),
           child: const Icon(
             Icons.location_on,
             color: Colors.red,
