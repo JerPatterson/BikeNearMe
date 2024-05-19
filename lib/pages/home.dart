@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+
 
 
 const minZoom = 10.0;
@@ -22,6 +24,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseDatabase database = FirebaseDatabase.instance;
+    database.ref('systems').get().then((value) => {
+      print(value.value.toString())
+    });
+  }
 
   void updateMarkers(MapPosition position, bool _) {
     double latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
