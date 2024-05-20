@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<System> _systems = [];
   
   final List<Marker> _markers = [];
+  final Set<String> _knownSystems = {};
   final Set<String> _knownPositions = {};
   
 
@@ -43,26 +44,36 @@ class _HomePageState extends State<HomePage> {
 
 
   void updateMarkers(MapPosition position, bool _) {
-    double latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
-    double longitude = double.parse(position.center!.longitude.toStringAsFixed(1));
+    double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
+    double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
 
-    String positionString = "$latitude,$longitude";
+    String positionString = "$lat,$lon";
     if (_knownPositions.contains(positionString)) return;
     
     setState(() {
       _knownPositions.add(positionString);
-      _markers.add(
-        Marker(
-          width: 100.0,
-          height: 100.0,
-          point: LatLng(latitude, longitude),
-          child: const Icon(
-            Icons.location_on,
-            color: Colors.red,
-            size: 35.0,
-          ),
-        ),
-      );
+      for (var system in _systems) {
+        if (_knownSystems.contains(system.id)) continue;
+        if (
+          system.maxPosition.latitude > lat && system.minPosition.latitude < lat
+          && system.maxPosition.longitude > lon && system.minPosition.longitude < lon
+        ) {
+          _knownSystems.add(system.id);
+        }
+      }
+      
+      // _markers.add(
+      //   Marker(
+      //     width: 100.0,
+      //     height: 100.0,
+      //     point: LatLng(lat, lon),
+      //     child: const Icon(
+      //       Icons.location_on,
+      //       color: Colors.red,
+      //       size: 35.0,
+      //     ),
+      //   ),
+      // );
     });
   }
 
