@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,13 +19,22 @@ class StationsData {
     var url = Uri.parse(stationStatusUrl);
     var response = await client.get(url);
 
-    var test = _stationsStatusFromJson(json.decode(response.body)['data']['stations']);
-    print(test);
+    return _stationsStatusFromJson(json.decode(response.body)['data']['stations']);
+  }
 
-    return test;
+  Future<List<StationInformation>> getStationsInformation() async {
+    var client = http.Client();
+    var url = Uri.parse(stationInformationUrl);
+    var response = await client.get(url);
+
+    return _stationsInformationFromJson(json.decode(response.body)['data']['stations']);
   }
 
   List<StationStatus> _stationsStatusFromJson(list) => List<StationStatus>.from(
     list.map((x) => StationStatus.fromJson(Map<String, dynamic>.from(x)))
+  );
+
+  List<StationInformation> _stationsInformationFromJson(list) => List<StationInformation>.from(
+    list.map((x) => StationInformation.fromJson(Map<String, dynamic>.from(x)))
   );
 }

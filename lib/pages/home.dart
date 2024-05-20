@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           );
         });
 
-        _stationsData[system.id]?.getStationsStatus();
+        _stationsData[system.id]?.getStationsInformation().then((value) => print(value[0].name));
       }
     }
       
