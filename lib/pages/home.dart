@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   late final SystemsData _systemsData;
   final Map<String, StationsData> _stationsData = {};
   
-  final List<Marker> _markers = [];
+  List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
   
 
@@ -49,32 +49,36 @@ class _HomePageState extends State<HomePage> {
     for (var system in _systemsData.systems) {
       if (_stationsData.containsKey(system.id)) continue;
       if (system.isInBounds(lat, lon)) {
-        setState(() {  
-          _stationsData.putIfAbsent(
-            system.id,
-            () => StationsData(
-              stationStatusUrl: system.stationStatusUrl,
-              stationInformationUrl: system.stationInformationUrl,
-            )
-          );
-        });
+        _stationsData.putIfAbsent(
+          system.id,
+          () => StationsData(
+            stationStatusUrl: system.stationStatusUrl,
+            stationInformationUrl: system.stationInformationUrl,
+          )
+        );
 
-        _stationsData[system.id]?.getStationsInformation().then((value) => print(value[0].name));
+        _stationsData[system.id]?.getStationsInformation().then((stations) {
+          for (var station in stations) {
+            _markers.add(
+              Marker(
+                width: 100.0,
+                height: 100.0,
+                point: LatLng(station.lat, station.lon),
+                child: const Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  size: 35.0,
+                ),
+              ),
+            );
+          }
+
+          setState(() {
+            _markers = _markers;
+          });
+        });
       }
     }
-      
-      // _markers.add(
-      //   Marker(
-      //     width: 100.0,
-      //     height: 100.0,
-      //     point: LatLng(lat, lon),
-      //     child: const Icon(
-      //       Icons.location_on,
-      //       color: Colors.red,
-      //       size: 35.0,
-      //     ),
-      //   ),
-      // );
   }
 
   @override
