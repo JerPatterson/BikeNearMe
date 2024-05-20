@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:bike_near_me/entities/system.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
-
 
 
 const minZoom = 10.0;
@@ -22,17 +22,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<System> _systems = [];
+  
   final List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
+  
 
   @override
   void initState() {
     super.initState();
     FirebaseDatabase database = FirebaseDatabase.instance;
-    database.ref('systems').get().then((value) => {
-      print(value.value.toString())
+    database.ref('systems').get().then((snapshot) => {
+      _systems = systemsFromJson(snapshot.value)
     });
   }
+
+  List<System> systemsFromJson(list) => List<System>.from(
+    list.map((x) => System.fromJson(Map<String, dynamic>.from(x as Map)))
+  );
+
 
   void updateMarkers(MapPosition position, bool _) {
     double latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
