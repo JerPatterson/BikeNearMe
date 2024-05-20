@@ -1,4 +1,4 @@
-import 'package:bike_near_me/entities/system.dart';
+import 'package:bike_near_me/services/systems_data.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<System> _systems = [];
+  late SystemsData systemsData;
   
   final List<Marker> _markers = [];
   final Set<String> _knownSystems = {};
@@ -33,14 +33,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     FirebaseDatabase database = FirebaseDatabase.instance;
-    database.ref('systems').get().then((snapshot) => {
-      _systems = systemsFromJson(snapshot.value)
-    });
+    systemsData = SystemsData(database: database);
   }
-
-  List<System> systemsFromJson(list) => List<System>.from(
-    list.map((x) => System.fromJson(Map<String, dynamic>.from(x as Map)))
-  );
 
 
   void updateMarkers(MapPosition position, bool _) {
@@ -52,7 +46,7 @@ class _HomePageState extends State<HomePage> {
     
     setState(() {
       _knownPositions.add(positionString);
-      for (var system in _systems) {
+      for (var system in systemsData.systems) {
         if (_knownSystems.contains(system.id)) continue;
         if (
           system.maxPosition.latitude > lat && system.minPosition.latitude < lat
