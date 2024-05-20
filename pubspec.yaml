@@ -41,6 +41,7 @@ dependencies:
   flutter_map: ^6.1.0
   flutter_map_cancellable_tile_provider: ^2.0.0
   firebase_database: ^10.5.5
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:

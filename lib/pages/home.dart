@@ -58,6 +58,8 @@ class _HomePageState extends State<HomePage> {
             )
           );
         });
+
+        _stationsData[system.id]?.getStationsStatus();
       }
     }
       
