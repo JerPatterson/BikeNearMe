@@ -6,4 +6,7 @@ class StationsData {
 
   final String stationStatusUrl;
   final String stationInformationUrl;
+
+
+  
 }

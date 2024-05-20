@@ -1,3 +1,4 @@
+import 'package:bike_near_me/services/stations_data.dart';
 import 'package:bike_near_me/services/systems_data.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late SystemsData systemsData;
+  late final SystemsData _systemsData;
+  final Map<String, StationsData> _stationsData = {};
   
   final List<Marker> _markers = [];
-  final Set<String> _knownSystems = {};
   final Set<String> _knownPositions = {};
   
 
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     FirebaseDatabase database = FirebaseDatabase.instance;
-    systemsData = SystemsData(database: database);
+    _systemsData = SystemsData(database: database);
   }
 
 
@@ -43,18 +44,22 @@ class _HomePageState extends State<HomePage> {
 
     String positionString = "$lat,$lon";
     if (_knownPositions.contains(positionString)) return;
-    
-    setState(() {
-      _knownPositions.add(positionString);
-      for (var system in systemsData.systems) {
-        if (_knownSystems.contains(system.id)) continue;
-        if (
-          system.maxPosition.latitude > lat && system.minPosition.latitude < lat
-          && system.maxPosition.longitude > lon && system.minPosition.longitude < lon
-        ) {
-          _knownSystems.add(system.id);
-        }
+    _knownPositions.add(positionString);
+
+    for (var system in _systemsData.systems) {
+      if (_stationsData.containsKey(system.id)) continue;
+      if (system.isInBounds(lat, lon)) {
+        setState(() {  
+          _stationsData.putIfAbsent(
+            system.id,
+            () => StationsData(
+              stationStatusUrl: system.stationStatusUrl,
+              stationInformationUrl: system.stationInformationUrl,
+            )
+          );
+        });
       }
+    }
       
       // _markers.add(
       //   Marker(
@@ -68,7 +73,6 @@ class _HomePageState extends State<HomePage> {
       //     ),
       //   ),
       // );
-    });
   }
 
   @override

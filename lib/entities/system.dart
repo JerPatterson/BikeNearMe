@@ -22,4 +22,9 @@ class System {
     stationStatusUrl: json['station_status_url'],
     stationInformationUrl: json['station_information_url'],
   );
+
+
+  bool isInBounds(double lat, double lon) =>
+    maxPosition.latitude > lat && minPosition.latitude < lat
+      && maxPosition.longitude > lon && minPosition.longitude < lon;
 }
