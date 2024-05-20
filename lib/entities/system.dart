@@ -9,11 +9,11 @@ class System {
     required this.stationInformationUrl,
   });
 
-  String id;
-  LatLng minPosition;
-  LatLng maxPosition;
-  String stationStatusUrl;
-  String stationInformationUrl;
+  final String id;
+  final LatLng minPosition;
+  final LatLng maxPosition;
+  final String stationStatusUrl;
+  final String stationInformationUrl;
 
   factory System.fromJson(Map<String, dynamic> json) => System(
     id: json['id'],
