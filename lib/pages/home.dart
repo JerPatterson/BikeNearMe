@@ -1,3 +1,4 @@
+import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/services/stations_data.dart';
 import 'package:bike_near_me/services/systems_data.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                 height: 100.0,
                 point: LatLng(station.lat, station.lon),
                 child: const Icon(
-                  Icons.location_on,
+                  BikeShare.marker_bikes_100,
                   color: Colors.red,
                   size: 35.0,
                 ),
