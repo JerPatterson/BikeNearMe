@@ -65,9 +65,9 @@ class _HomePageState extends State<HomePage> {
                 width: 100.0,
                 height: 100.0,
                 point: LatLng(station.lat, station.lon),
-                child: const Icon(
+                child: Icon(
                   BikeShare.marker_bikes_100,
-                  color: Colors.red,
+                  color: system.color,
                   size: 35.0,
                 ),
               ),
