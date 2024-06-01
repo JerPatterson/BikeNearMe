@@ -34,4 +34,5 @@ class BikeShare {
   static const IconData bike_electric = IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData bike = IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData dock = IconData(0xe81a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData marker_background = IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
