@@ -53,17 +53,19 @@ class _HomePageState extends State<HomePage> {
         _stationsData.putIfAbsent(
           system.id,
           () => StationsData(
+            systemId: system.id,
             stationStatusUrl: system.stationStatusUrl,
             stationInformationUrl: system.stationInformationUrl,
           )
         );
 
-        _stationsData[system.id]?.getStationsInformation().then((stations) {
+        var stationsDataOfSystem = _stationsData[system.id];
+        stationsDataOfSystem?.getStationsInformation().then((stations) {
           for (var station in stations) {
             _markers.add(
               Marker(
-                width: 100.0,
-                height: 100.0,
+                width: 35.0,
+                height: 35.0,
                 point: LatLng(station.lat, station.lon),
                 child: Stack(
                   children: [
@@ -73,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                       size: 35.0,
                     ),
                     Icon(
-                      BikeShare.marker_bikes_100,
+                      stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id),
                       color: system.color,
                       size: 35.0,
                     ),
