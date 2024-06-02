@@ -113,6 +113,49 @@ class StationsData {
     }
   }
 
+  IconData getStationIconFromDocksAvailability(String systemId, String stationId) {
+    var stationStatus = stationsStatusOfSystemByIds[systemId]?[stationId];
+    var stationInformation = stationsInformationOfSystemByIds[systemId]?[stationId];
+
+    try {
+      var availability = 0.0;
+      var capacity = stationInformation!.capacity;
+      if (stationStatus != null && capacity != null) {
+        availability = 10 - stationStatus.numVehiclesAvailable * 10 / capacity;
+      }
+      
+      if (availability == 0.0) return BikeShare.marker_docks_0;
+
+      switch (availability.floor()) {
+        case 0:
+        case 1:
+          return BikeShare.marker_docks_10;
+        case 2:
+          return BikeShare.marker_docks_20;
+        case 3:
+          return BikeShare.marker_docks_30;
+        case 4:
+          return BikeShare.marker_docks_40;
+        case 5:
+          return BikeShare.marker_docks_50;
+        case 6:
+          return BikeShare.marker_docks_60;
+        case 7:
+          return BikeShare.marker_docks_70;
+        case 8:
+          return BikeShare.marker_docks_80;
+        case 9:
+          return BikeShare.marker_docks_90;
+        case 10:
+          return BikeShare.marker_docks_100;
+        default:
+          return BikeShare.marker_docks_0;
+      }
+    } catch (_) {
+      return BikeShare.marker_docks_0;
+    }
+  }
+
   List<StationStatus> _stationsStatusFromJson(list) => List<StationStatus>.from(
     list.map((x) => StationStatus.fromJson(Map<String, dynamic>.from(x)))
   );

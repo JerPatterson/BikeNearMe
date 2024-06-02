@@ -31,7 +31,10 @@ class _HomePageState extends State<HomePage> {
   
   List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
-  
+
+  String _typeNotDisplayed = "docks";
+  IconData _switchMarkerTypeIcon = BikeShare.dock;
+
 
   @override
   void initState() {
@@ -94,7 +97,8 @@ class _HomePageState extends State<HomePage> {
                     size: 35.0,
                   ),
                   Icon(
-                    stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id),
+                    _typeNotDisplayed == "docks" ? stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id)
+                      : stationsDataOfSystem.getStationIconFromDocksAvailability(system.id, station.id),
                     color: system.color,
                     size: 35.0,
                   ),
@@ -147,9 +151,21 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
-        tooltip: 'Display ${"bikes"} instead',
-        child: const Icon(Icons.pedal_bike),
+        onPressed: () {
+          switch (_typeNotDisplayed) {
+            case "bikes":
+              _typeNotDisplayed = "docks";
+              _switchMarkerTypeIcon = BikeShare.dock;
+              updateMarkers();
+            case "docks":
+              _typeNotDisplayed = "bikes";
+              _switchMarkerTypeIcon = BikeShare.bike;
+              updateMarkers();
+              break;
+          }
+        },
+        tooltip: 'Display ${_typeNotDisplayed} instead',
+        child: Icon(_switchMarkerTypeIcon),
       ),
     );
   }
