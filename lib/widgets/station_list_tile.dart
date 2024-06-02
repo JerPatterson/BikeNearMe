@@ -1,8 +1,22 @@
-import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 
 class StationListTile extends StatelessWidget {
-  const StationListTile({super.key});
+  const StationListTile({
+    super.key,
+    required this.distance,
+    required this.stationName,
+    required this.bikesAvailableCount,
+    required this.color,
+    required this.textColor,
+    required this.markerIcon,
+  });
+
+  final String distance;
+  final String stationName;
+  final int bikesAvailableCount;
+  final Color color;
+  final Color textColor;
+  final IconData markerIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -10,35 +24,35 @@ class StationListTile extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
-          decoration: const BoxDecoration(
-            color: Colors.red,
+          decoration: BoxDecoration(
+            color: color,
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Icon(
-                    BikeShare.marker_bikes_50,
-                    color: Colors.white,
+                    markerIcon,
+                    color: textColor,
                     size: 60,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "300m",
+                        distance,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           height: 1,
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "Métro Montmorency",
+                        stationName,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           fontSize: 18,
                         ),
                       ),
@@ -50,9 +64,9 @@ class StationListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "12",
+                    bikesAvailableCount.toString(),
                     style: TextStyle(
-                      color: Colors.white,
+                      color: textColor,
                       height: 1,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -61,7 +75,7 @@ class StationListTile extends StatelessWidget {
                   Text(
                     "vélos",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: textColor,
                       fontSize: 14,
                     ),
                   ),
