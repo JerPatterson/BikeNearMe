@@ -29,8 +29,10 @@ class _HomePageState extends State<HomePage> {
   late final SystemsData _systemsData;
   final Map<String, StationsData> _stationsData = {};
   
+  
   List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
+  MapPosition _position = MapPosition(center: initialCenter);
 
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
@@ -45,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   void initMapContent() {
     Timer(const Duration(seconds: 1), () {
-      updateKnownPositions(const MapPosition(center: initialCenter), false);
+      updateKnownPositions(_position, false);
     });
     Timer.periodic(const Duration(seconds: 30), (_) {
       updateMarkers();
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateKnownPositions(MapPosition position, bool _) {
+    _position = position;
     double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
     double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
 
@@ -63,17 +66,16 @@ class _HomePageState extends State<HomePage> {
     var needToUpdateMarkers = false;
     for (var system in _systemsData.systems) {
       if (_stationsData.containsKey(system.id)) continue;
-      if (system.isInBounds(lat, lon)) {
-        needToUpdateMarkers = true;
-        _stationsData.putIfAbsent(
-          system.id,
-          () => StationsData(
-            systemId: system.id,
-            stationStatusUrl: system.stationStatusUrl,
-            stationInformationUrl: system.stationInformationUrl,
-          )
-        );
-      }
+      if (!system.isInBounds(lat, lon)) continue;
+      needToUpdateMarkers = true;
+      _stationsData.putIfAbsent(
+        system.id,
+        () => StationsData(
+          systemId: system.id,
+          stationStatusUrl: system.stationStatusUrl,
+          stationInformationUrl: system.stationInformationUrl,
+        )
+      );
     }
 
     if (needToUpdateMarkers) updateMarkers();
@@ -81,6 +83,7 @@ class _HomePageState extends State<HomePage> {
 
   void updateMarkers() {
     for (var system in _systemsData.systems) {
+      if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
       var stationsDataOfSystem = _stationsData[system.id];
       stationsDataOfSystem?.getStationsInformation().then((stations) {
         for (var station in stations) {
@@ -164,7 +167,7 @@ class _HomePageState extends State<HomePage> {
               break;
           }
         },
-        tooltip: 'Display ${_typeNotDisplayed} instead',
+        tooltip: 'Display $_typeNotDisplayed instead',
         child: Icon(_switchMarkerTypeIcon),
       ),
     );

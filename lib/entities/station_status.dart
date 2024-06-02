@@ -19,7 +19,7 @@ class StationStatus {
   bool isInstalled;
   bool isRenting;
   bool isReturning;
-  int lastReported;
+  int? lastReported;
 
   factory StationStatus.fromJson(Map<String, dynamic> json) => StationStatus(
     id: json['station_id'],

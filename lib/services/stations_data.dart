@@ -121,7 +121,7 @@ class StationsData {
       var availability = 0.0;
       var capacity = stationInformation!.capacity;
       if (stationStatus != null && capacity != null) {
-        availability = 10 - stationStatus.numVehiclesAvailable * 10 / capacity;
+        availability = 10.0 - stationStatus.numVehiclesAvailable * 10 / capacity;
       }
       
       if (availability == 0.0) return BikeShare.marker_docks_0;
