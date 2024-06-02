@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   
   List<Marker> _markers = [];
   final Set<String> _knownPositions = {};
-  MapPosition _position = MapPosition(center: initialCenter);
+  MapPosition _position = const MapPosition(center: initialCenter);
 
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
