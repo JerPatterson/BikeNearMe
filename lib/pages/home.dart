@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/services/stations_data.dart';
 import 'package:bike_near_me/services/systems_data.dart';
@@ -34,12 +36,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseDatabase database = FirebaseDatabase.instance;
-    _systemsData = SystemsData(database: database);
+    _systemsData = SystemsData(database: FirebaseDatabase.instance);
   }
 
 
-  void updateMarkers(MapPosition position, bool _) {
+  void initMapContent() {
+    Timer(const Duration(seconds: 1), () {
+      updateKnownPositions(const MapPosition(center: initialCenter), false);
+    });
+    Timer.periodic(const Duration(seconds: 30), (_) {
+      updateMarkers();
+    });
+  }
+
+  void updateKnownPositions(MapPosition position, bool _) {
     double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
     double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
 
@@ -47,9 +57,11 @@ class _HomePageState extends State<HomePage> {
     if (_knownPositions.contains(positionString)) return;
     _knownPositions.add(positionString);
 
+    var needToUpdateMarkers = false;
     for (var system in _systemsData.systems) {
       if (_stationsData.containsKey(system.id)) continue;
       if (system.isInBounds(lat, lon)) {
+        needToUpdateMarkers = true;
         _stationsData.putIfAbsent(
           system.id,
           () => StationsData(
@@ -58,38 +70,44 @@ class _HomePageState extends State<HomePage> {
             stationInformationUrl: system.stationInformationUrl,
           )
         );
-
-        var stationsDataOfSystem = _stationsData[system.id];
-        stationsDataOfSystem?.getStationsInformation().then((stations) {
-          for (var station in stations) {
-            _markers.add(
-              Marker(
-                width: 35.0,
-                height: 35.0,
-                point: LatLng(station.lat, station.lon),
-                child: Stack(
-                  children: [
-                    const Icon(
-                      BikeShare.marker_background,
-                      color: Colors.white,
-                      size: 35.0,
-                    ),
-                    Icon(
-                      stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id),
-                      color: system.color,
-                      size: 35.0,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          setState(() {
-            _markers = _markers;
-          });
-        });
       }
+    }
+
+    if (needToUpdateMarkers) updateMarkers();
+  }
+
+  void updateMarkers() {
+    for (var system in _systemsData.systems) {
+      var stationsDataOfSystem = _stationsData[system.id];
+      stationsDataOfSystem?.getStationsInformation().then((stations) {
+        for (var station in stations) {
+          _markers.add(
+            Marker(
+              width: 35.0,
+              height: 35.0,
+              point: LatLng(station.lat, station.lon),
+              child: Stack(
+                children: [
+                  const Icon(
+                    BikeShare.marker_background,
+                    color: Colors.white,
+                    size: 35.0,
+                  ),
+                  Icon(
+                    stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id),
+                    color: system.color,
+                    size: 35.0,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        setState(() {
+          _markers = _markers;
+        });
+      });
     }
   }
 
@@ -106,7 +124,8 @@ class _HomePageState extends State<HomePage> {
           initialZoom: initialZoom,
           minZoom: minZoom,
           maxZoom: maxZoom,
-          onPositionChanged: updateMarkers,
+          onMapReady: initMapContent,
+          onPositionChanged: updateKnownPositions,
         ),
         children: [
           TileLayer(
