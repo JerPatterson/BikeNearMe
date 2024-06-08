@@ -2,16 +2,10 @@ import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/widgets/station_list_tile.dart';
 import 'package:flutter/material.dart';
 
-class StationList extends StatefulWidget {
-  const StationList({super.key});
-
-  @override
-  State<StationList> createState() => _StationListState();
-}
-
-class _StationListState extends State<StationList> {
-  // late final SystemsData _systemsData;
-  // final Map<String, StationsData> _stationsData = {};
+class StationList extends StatelessWidget {
+  const StationList({
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

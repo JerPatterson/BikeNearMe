@@ -16,7 +16,10 @@ const initialCenter = LatLng(45.504789, -73.613187);
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({
+    super.key,
+    required this.title
+  });
 
   final String title;
   
