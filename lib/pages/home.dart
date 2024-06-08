@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/services/stations_data.dart';
 import 'package:bike_near_me/services/systems_data.dart';
@@ -82,6 +81,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateMarkers() {
+    _markers.clear();
     for (var system in _systemsData.systems) {
       if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
       var stationsDataOfSystem = _stationsData[system.id];

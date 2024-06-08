@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
@@ -12,8 +13,7 @@ class StationsData {
     required this.stationStatusUrl,
     required this.stationInformationUrl,
   }) {
-    setStationStatusById(systemId);
-    setStationInformationById(systemId);
+    _initDataRefresh();
   }
 
 
@@ -21,58 +21,33 @@ class StationsData {
   final String stationStatusUrl;
   final String stationInformationUrl;
 
-  final Map<String, Map<String, StationStatus>> stationsStatusOfSystemByIds = {};
-  final Map<String, Map<String, StationInformation>> stationsInformationOfSystemByIds = {};
+  final Map<String, StationStatus> stationsStatusByStationIds = {};
+  final Map<String, StationInformation> stationsInformationByStationIds = {};
 
 
-  void setStationStatusById(String systemId) async {
-    if (!stationsStatusOfSystemByIds.containsKey(systemId)) {
-      var stationsStatusOfSystem = <String, StationStatus>{};
-      for (var stationStatus in await getStationsStatus()) {
-        stationsStatusOfSystem.putIfAbsent(stationStatus.id, () => stationStatus);
-      }
-      stationsStatusOfSystemByIds.putIfAbsent(systemId, () => stationsStatusOfSystem);
-    }
+  void _initDataRefresh() {
+    Timer(const Duration(seconds: 1), () {
+      setStationStatusById();
+      setStationInformationById();
+    });
+    Timer.periodic(const Duration(seconds: 30), (_) {
+      setStationStatusById();
+    });
   }
 
-  void setStationInformationById(String systemId) async {
-    if (!stationsInformationOfSystemByIds.containsKey(systemId)) {
-      var stationsInformationOfSystem = <String, StationInformation>{};
-      for (var stationInformation in await getStationsInformation()) {
-        stationsInformationOfSystem.putIfAbsent(stationInformation.id, () => stationInformation);
-      }
-      stationsInformationOfSystemByIds.putIfAbsent(systemId, () => stationsInformationOfSystem);
-    }
-  }
-
-
-  Future<List<StationStatus>> getStationsStatus() async {
-    var client = http.Client();
-    var url = Uri.parse(stationStatusUrl);
-    var response = await client.get(url);
-
-    return _stationsStatusFromJson(json.decode(response.body)['data']['stations']);
-  }
-
-  Future<List<StationInformation>> getStationsInformation() async {
-    var client = http.Client();
-    var url = Uri.parse(stationInformationUrl);
-    var response = await client.get(url);
-
-    return _stationsInformationFromJson(json.decode(response.body)['data']['stations']);
-  }
 
   StationStatus? getStationStatusById(String systemId, String stationId)  {
-    return stationsStatusOfSystemByIds[systemId]?[stationId];
+    return stationsStatusByStationIds[stationId];
   }
 
   StationInformation? getStationInformationById(String systemId, String stationId) {
-    return stationsInformationOfSystemByIds[systemId]?[stationId];
+    return stationsInformationByStationIds[stationId];
   }
 
+
   IconData getStationIconFromBikesAvailability(String systemId, String stationId) {
-    var stationStatus = stationsStatusOfSystemByIds[systemId]?[stationId];
-    var stationInformation = stationsInformationOfSystemByIds[systemId]?[stationId];
+    var stationStatus = stationsStatusByStationIds[stationId];
+    var stationInformation = stationsInformationByStationIds[stationId];
 
     try {
       var availability = 0.0;
@@ -114,8 +89,8 @@ class StationsData {
   }
 
   IconData getStationIconFromDocksAvailability(String systemId, String stationId) {
-    var stationStatus = stationsStatusOfSystemByIds[systemId]?[stationId];
-    var stationInformation = stationsInformationOfSystemByIds[systemId]?[stationId];
+    var stationStatus = stationsStatusByStationIds[stationId];
+    var stationInformation = stationsInformationByStationIds[stationId];
 
     try {
       var availability = 0.0;
@@ -154,6 +129,44 @@ class StationsData {
     } catch (_) {
       return BikeShare.marker_docks_0;
     }
+  }
+
+
+  void setStationStatusById() async {
+    for (var stationStatus in await getStationsStatus()) {
+      stationsStatusByStationIds.update(
+        stationStatus.id,
+        (value) => stationStatus,
+        ifAbsent: () => stationStatus,
+      );
+    }
+  }
+
+  void setStationInformationById() async {
+    for (var stationInformation in await getStationsInformation()) {
+      stationsInformationByStationIds.update(
+        stationInformation.id,
+        (value) => stationInformation,
+        ifAbsent: () => stationInformation,
+      );
+    }
+  }
+
+
+  Future<List<StationStatus>> getStationsStatus() async {
+    var client = http.Client();
+    var url = Uri.parse(stationStatusUrl);
+    var response = await client.get(url);
+
+    return _stationsStatusFromJson(json.decode(response.body)['data']['stations']);
+  }
+
+  Future<List<StationInformation>> getStationsInformation() async {
+    var client = http.Client();
+    var url = Uri.parse(stationInformationUrl);
+    var response = await client.get(url);
+
+    return _stationsInformationFromJson(json.decode(response.body)['data']['stations']);
   }
 
   List<StationStatus> _stationsStatusFromJson(list) => List<StationStatus>.from(
