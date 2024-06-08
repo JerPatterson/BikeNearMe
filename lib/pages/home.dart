@@ -85,35 +85,34 @@ class _HomePageState extends State<HomePage> {
     for (var system in _systemsData.systems) {
       if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
       var stationsDataOfSystem = _stationsData[system.id];
-      stationsDataOfSystem?.getStationsInformation().then((stations) {
-        for (var station in stations) {
-          _markers.add(
-            Marker(
-              width: 35.0,
-              height: 35.0,
-              point: LatLng(station.lat, station.lon),
-              child: Stack(
-                children: [
-                  const Icon(
-                    BikeShare.marker_background,
-                    color: Colors.white,
-                    size: 35.0,
-                  ),
-                  Icon(
-                    _typeNotDisplayed == "docks" ? stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, station.id)
-                      : stationsDataOfSystem.getStationIconFromDocksAvailability(system.id, station.id),
-                    color: system.color,
-                    size: 35.0,
-                  ),
-                ],
-              ),
+      if (stationsDataOfSystem == null) return;
+      for (var stationInformation in stationsDataOfSystem.getStationsInformation()) {
+        _markers.add(
+          Marker(
+            width: 35.0,
+            height: 35.0,
+            point: LatLng(stationInformation.lat, stationInformation.lon),
+            child: Stack(
+              children: [
+                const Icon(
+                  BikeShare.marker_background,
+                  color: Colors.white,
+                  size: 35.0,
+                ),
+                Icon(
+                  _typeNotDisplayed == "docks" ? stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, stationInformation.id)
+                    : stationsDataOfSystem.getStationIconFromDocksAvailability(system.id, stationInformation.id),
+                  color: system.color,
+                  size: 35.0,
+                ),
+              ],
             ),
-          );
-        }
+          ),
+        );
+      }
 
-        setState(() {
-          _markers = _markers;
-        });
+      setState(() {
+        _markers = _markers;
       });
     }
   }

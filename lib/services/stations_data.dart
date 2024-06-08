@@ -21,23 +21,33 @@ class StationsData {
   final String stationStatusUrl;
   final String stationInformationUrl;
 
+  List<StationStatus> _stationsStatus = [];
+  List<StationInformation> _stationsInformation = [];
   final Map<String, StationStatus> stationsStatusByStationIds = {};
   final Map<String, StationInformation> stationsInformationByStationIds = {};
 
 
   void _initDataRefresh() {
     Timer(const Duration(seconds: 1), () {
-      setStationStatusById();
-      setStationInformationById();
+      _setStationsStatus();
+      _setStationsInformation();
     });
     Timer.periodic(const Duration(seconds: 30), (_) {
-      setStationStatusById();
+      _setStationsStatus();
     });
   }
 
 
-  StationStatus? getStationStatusById(String systemId, String stationId)  {
+  List<StationStatus> getStationsStatus() {
+    return _stationsStatus;
+  }
+
+  StationStatus? getStationStatusById(String systemId, String stationId) {
     return stationsStatusByStationIds[stationId];
+  }
+
+  List<StationInformation> getStationsInformation() {
+    return _stationsInformation;
   }
 
   StationInformation? getStationInformationById(String systemId, String stationId) {
@@ -132,8 +142,9 @@ class StationsData {
   }
 
 
-  void setStationStatusById() async {
-    for (var stationStatus in await getStationsStatus()) {
+  void _setStationsStatus() async {
+    _stationsStatus = await _getStationsStatus();
+    for (var stationStatus in _stationsStatus) {
       stationsStatusByStationIds.update(
         stationStatus.id,
         (value) => stationStatus,
@@ -142,8 +153,9 @@ class StationsData {
     }
   }
 
-  void setStationInformationById() async {
-    for (var stationInformation in await getStationsInformation()) {
+  void _setStationsInformation() async {
+    _stationsInformation = await _getStationsInformation();
+    for (var stationInformation in _stationsInformation) {
       stationsInformationByStationIds.update(
         stationInformation.id,
         (value) => stationInformation,
@@ -153,7 +165,7 @@ class StationsData {
   }
 
 
-  Future<List<StationStatus>> getStationsStatus() async {
+  Future<List<StationStatus>> _getStationsStatus() async {
     var client = http.Client();
     var url = Uri.parse(stationStatusUrl);
     var response = await client.get(url);
@@ -161,7 +173,7 @@ class StationsData {
     return _stationsStatusFromJson(json.decode(response.body)['data']['stations']);
   }
 
-  Future<List<StationInformation>> getStationsInformation() async {
+  Future<List<StationInformation>> _getStationsInformation() async {
     var client = http.Client();
     var url = Uri.parse(stationInformationUrl);
     var response = await client.get(url);
