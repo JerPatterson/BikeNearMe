@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bike_near_me/icons/bike_share.dart';
-import 'package:bike_near_me/services/stations_data.dart';
-import 'package:bike_near_me/services/systems_data.dart';
+import 'package:bike_near_me/services/stations_system.dart';
+import 'package:bike_near_me/services/systems.dart';
 import 'package:bike_near_me/widgets/station_list.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +29,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final SystemsData _systemsData;
-  final Map<String, StationsData> _stationsDataBySystemId = {};
+  late final Systems _systems;
+  final Map<String, StationsSystem> _stationsSystemById = {};
   
   List<Marker> _markers = [];
-  List<StationsData> _stationsData = [];
+  List<StationsSystem> _stationsSystems = [];
 
   final Set<String> _knownPositions = {};
   MapPosition _position = const MapPosition(center: initialCenter);
@@ -49,8 +49,8 @@ class _HomePageState extends State<HomePage> {
 
 
   void initMapRefresh() {
-    SystemsData.create(FirebaseDatabase.instance).then((systemsData) {
-      _systemsData = systemsData;
+    Systems.create(FirebaseDatabase.instance).then((systems) {
+      _systems = systems;
       updateKnownPositions(_position, false);
       Timer.periodic(const Duration(seconds: 30), (_) {
         updateMarkers();
@@ -69,21 +69,21 @@ class _HomePageState extends State<HomePage> {
     if (_knownPositions.contains(positionString)) return;
     _knownPositions.add(positionString);
 
-    List<Future<StationsData>> futureStationsData = [];
-    for (var system in _systemsData.systems) {
-      if (_stationsDataBySystemId.containsKey(system.id) || !system.isInBounds(lat, lon)) continue;
-      futureStationsData.add(StationsData.create(system));
+    List<Future<StationsSystem>> futureStationSystems = [];
+    for (var system in _systems.systems) {
+      if (_stationsSystemById.containsKey(system.id) || !system.isInBounds(lat, lon)) continue;
+      futureStationSystems.add(StationsSystem.create(system));
     }
 
-    futureStationsData.wait.then((stationsDataList) {
-      for (StationsData stationsData in stationsDataList) {
-        _stationsDataBySystemId.putIfAbsent(
-          stationsData.systemId,
-          () => stationsData
+    futureStationSystems.wait.then((stationsSystems) {
+      for (StationsSystem stationsSystem in stationsSystems) {
+        _stationsSystemById.putIfAbsent(
+          stationsSystem.systemId,
+          () => stationsSystem
         );
       }
 
-      if (stationsDataList.isNotEmpty) updateMarkers();
+      if (stationsSystems.isNotEmpty) updateMarkers();
     });
 
     
@@ -91,13 +91,13 @@ class _HomePageState extends State<HomePage> {
 
   void updateMarkers() {
     _markers.clear();
-    _stationsData.clear();
-    for (var system in _systemsData.systems) {
+    _stationsSystems.clear();
+    for (var system in _systems.systems) {
       if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
-      var stationsData = _stationsDataBySystemId[system.id];
-      if (stationsData == null) return;
-      _stationsData.add(stationsData);
-      for (var stationInformation in stationsData.getStationsInformation()) {
+      var stationsSystem = _stationsSystemById[system.id];
+      if (stationsSystem == null) return;
+      _stationsSystems.add(stationsSystem);
+      for (var stationInformation in stationsSystem.getStationsInformation()) {
         _markers.add(
           Marker(
             width: 35.0,
@@ -112,8 +112,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Icon(
                   _typeNotDisplayed == "docks" ? 
-                    stationsData.getStationIconFromBikesAvailability(stationInformation.id)
-                    : stationsData.getStationIconFromDocksAvailability(stationInformation.id),
+                    stationsSystem.getStationIconFromBikesAvailability(stationInformation.id)
+                    : stationsSystem.getStationIconFromDocksAvailability(stationInformation.id),
                   color: system.color,
                   size: 35.0,
                 ),
@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         _markers = _markers;
-        _stationsData = _stationsData;
+        _stationsSystems = _stationsSystems;
       });
     }
   }

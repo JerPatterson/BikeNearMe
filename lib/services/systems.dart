@@ -2,8 +2,8 @@ import 'package:bike_near_me/entities/system.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 
-class SystemsData {
-  SystemsData._create({required this.database}) {
+class Systems {
+  Systems._create({required this.database}) {
     database.ref('systems').get().then((snapshot) {
       for (var system in _systemsFromJson(snapshot.value)) {
         systems.add(system);
@@ -12,8 +12,8 @@ class SystemsData {
     });
   }
 
-  static Future<SystemsData> create(FirebaseDatabase database) async {
-    var instance = SystemsData._create(database: database);
+  static Future<Systems> create(FirebaseDatabase database) async {
+    var instance = Systems._create(database: database);
 
     var snapshot = await database.ref('systems').get();
     for (var system in instance._systemsFromJson(snapshot.value)) {

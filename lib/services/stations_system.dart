@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
-class StationsData {
-  StationsData._create({
+class StationsSystem {
+  StationsSystem._create({
     required this.systemId,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
@@ -17,8 +17,8 @@ class StationsData {
     _initDataRefresh();
   }
 
-  static Future<StationsData> create(System system) async {
-    var instance = StationsData._create(
+  static Future<StationsSystem> create(System system) async {
+    var instance = StationsSystem._create(
       systemId: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
