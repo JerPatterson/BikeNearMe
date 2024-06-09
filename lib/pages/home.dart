@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:bike_near_me/entities/station_information.dart';
+import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/services/stations_system.dart';
 import 'package:bike_near_me/services/systems.dart';
@@ -30,13 +32,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final Systems _systems;
-  final Map<String, StationsSystem> _stationsSystemById = {};
+  final Map<String, StationsSystem> _stationsSystemByIds = {};
   
   List<Marker> _markers = [];
   List<StationsSystem> _stationsSystems = [];
 
   final Set<String> _knownPositions = {};
-  MapPosition _position = const MapPosition(center: initialCenter);
+  double _latitude = initialCenter.latitude;
+  double _longitude = initialCenter.longitude;
 
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
@@ -51,7 +54,7 @@ class _HomePageState extends State<HomePage> {
   void initMapRefresh() {
     Systems.create(FirebaseDatabase.instance).then((systems) {
       _systems = systems;
-      updateKnownPositions(_position, false);
+      updateKnownPositions(const MapPosition(center: initialCenter), false);
       Timer.periodic(const Duration(seconds: 30), (_) {
         updateMarkers();
       });
@@ -61,65 +64,62 @@ class _HomePageState extends State<HomePage> {
 
 
   void updateKnownPositions(MapPosition position, bool _) {
-    _position = position;
-    double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
-    double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
+    _latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
+    _longitude = double.parse(position.center!.longitude.toStringAsFixed(1));
+    if (_isKnownPosition(_latitude, _longitude)) return;
 
-    String positionString = "$lat,$lon";
-    if (_knownPositions.contains(positionString)) return;
-    _knownPositions.add(positionString);
-
-    List<Future<StationsSystem>> futureStationSystems = [];
-    for (var system in _systems.systems) {
-      if (_stationsSystemById.containsKey(system.id) || !system.isInBounds(lat, lon)) continue;
-      futureStationSystems.add(StationsSystem.create(system));
+    List<Future<StationsSystem>> stationSystems = [];
+    for (System system in _systems.systems) {
+      if (_isUnknownStationsSystem(system.id)
+        && system.isInBounds(_latitude, _longitude)) {
+        stationSystems.add(StationsSystem.create(system));
+      }
     }
 
-    futureStationSystems.wait.then((stationsSystems) {
+    stationSystems.wait.then((stationsSystems) {
       for (StationsSystem stationsSystem in stationsSystems) {
-        _stationsSystemById.putIfAbsent(
-          stationsSystem.systemId,
+        _stationsSystemByIds.putIfAbsent(
+          stationsSystem.id,
           () => stationsSystem
         );
       }
 
       if (stationsSystems.isNotEmpty) updateMarkers();
     });
-
-    
   }
+
+  bool _isKnownPosition(double lat, double lon) {
+    String positionString = "$lat,$lon";
+    if (_knownPositions.contains(positionString)) return true;
+    _knownPositions.add(positionString);
+    return false;
+  }
+
+  bool _isUnknownStationsSystem(String id) {
+    return !_stationsSystemByIds.containsKey(id);
+  }
+
 
   void updateMarkers() {
     _markers.clear();
     _stationsSystems.clear();
-    for (var system in _systems.systems) {
-      if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
-      var stationsSystem = _stationsSystemById[system.id];
-      if (stationsSystem == null) return;
+
+    for (System system in _systems.systems) {
+      StationsSystem? stationsSystem = _stationsSystemByIds[system.id];
+      if (stationsSystem == null || !system.isInBounds(_latitude, _longitude)) continue;
       _stationsSystems.add(stationsSystem);
-      for (var stationInformation in stationsSystem.getStationsInformation()) {
+
+      for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
         _markers.add(
-          Marker(
-            width: 35.0,
-            height: 35.0,
-            point: LatLng(stationInformation.lat, stationInformation.lon),
-            child: Stack(
-              children: [
-                const Icon(
-                  BikeShare.marker_background,
-                  color: Colors.white,
-                  size: 35.0,
-                ),
-                Icon(
-                  _typeNotDisplayed == "docks" ? 
-                    stationsSystem.getStationIconFromBikesAvailability(stationInformation.id)
-                    : stationsSystem.getStationIconFromDocksAvailability(stationInformation.id),
-                  color: system.color,
-                  size: 35.0,
-                ),
-              ],
+          _createMarker(
+            stationsSystem.getStationAvailabilityIcon(
+              stationInformation.id,
+              _typeNotDisplayed == "bikes"
             ),
-          ),
+            system.color,
+            stationInformation.lat,
+            stationInformation.lon,
+          )
         );
       }
 
@@ -128,6 +128,28 @@ class _HomePageState extends State<HomePage> {
         _stationsSystems = _stationsSystems;
       });
     }
+  }
+
+  Marker _createMarker(IconData icon, Color color, double lat, double lon) {
+    return Marker(
+      width: 35.0,
+      height: 35.0,
+      point: LatLng(lat, lon),
+      child: Stack(
+        children: [
+          const Icon(
+            BikeShare.marker_background,
+            color: Colors.white,
+            size: 35.0,
+          ),
+          Icon(
+            icon,
+            color: color,
+            size: 35.0,
+          ),
+        ],
+      ),
+    );
   }
 
 

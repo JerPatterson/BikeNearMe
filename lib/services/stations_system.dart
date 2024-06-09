@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 
 class StationsSystem {
   StationsSystem._create({
-    required this.systemId,
+    required this.id,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
   }) {
@@ -19,7 +19,7 @@ class StationsSystem {
 
   static Future<StationsSystem> create(System system) async {
     var instance = StationsSystem._create(
-      systemId: system.id,
+      id: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
     );
@@ -31,7 +31,7 @@ class StationsSystem {
   }
 
 
-  final String systemId;
+  final String id;
   final String stationStatusUrl;
   final String stationInformationUrl;
 
@@ -65,7 +65,12 @@ class StationsSystem {
   }
 
 
-  IconData getStationIconFromBikesAvailability(String stationId) {
+  IconData getStationAvailabilityIcon(String stationId, bool showDockAvailability) {
+    if (showDockAvailability) return _getStationAvailabilityIconForDocks(stationId);
+    return _getStationAvailabilityIconForBikes(stationId);
+  }
+
+  IconData _getStationAvailabilityIconForBikes(String stationId) {
     var stationStatus = stationsStatusByStationIds[stationId];
     var stationInformation = stationsInformationByStationIds[stationId];
 
@@ -108,7 +113,7 @@ class StationsSystem {
     }
   }
 
-  IconData getStationIconFromDocksAvailability(String stationId) {
+  IconData _getStationAvailabilityIconForDocks(String stationId) {
     var stationStatus = stationsStatusByStationIds[stationId];
     var stationInformation = stationsInformationByStationIds[stationId];
 
