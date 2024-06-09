@@ -2,18 +2,32 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
+import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
 class StationsData {
-  StationsData({
+  StationsData._create({
     required this.systemId,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
   }) {
     _initDataRefresh();
+  }
+
+  static Future<StationsData> create(System system) async {
+    var instance = StationsData._create(
+      systemId: system.id,
+      stationStatusUrl: system.stationStatusUrl,
+      stationInformationUrl: system.stationInformationUrl,
+    );
+    
+    await instance._setStationsInformation();
+    await instance._setStationsStatus();
+
+    return instance;
   }
 
 
@@ -28,10 +42,6 @@ class StationsData {
 
 
   void _initDataRefresh() {
-    Timer(const Duration(seconds: 1), () {
-      _setStationsStatus();
-      _setStationsInformation();
-    });
     Timer.periodic(const Duration(seconds: 30), (_) {
       _setStationsStatus();
     });
@@ -50,12 +60,12 @@ class StationsData {
     return _stationsInformation;
   }
 
-  StationInformation? getStationInformationById(String systemId, String stationId) {
+  StationInformation? getStationInformationById(String stationId) {
     return stationsInformationByStationIds[stationId];
   }
 
 
-  IconData getStationIconFromBikesAvailability(String systemId, String stationId) {
+  IconData getStationIconFromBikesAvailability(String stationId) {
     var stationStatus = stationsStatusByStationIds[stationId];
     var stationInformation = stationsInformationByStationIds[stationId];
 
@@ -98,7 +108,7 @@ class StationsData {
     }
   }
 
-  IconData getStationIconFromDocksAvailability(String systemId, String stationId) {
+  IconData getStationIconFromDocksAvailability(String stationId) {
     var stationStatus = stationsStatusByStationIds[stationId];
     var stationInformation = stationsInformationByStationIds[stationId];
 
@@ -142,7 +152,7 @@ class StationsData {
   }
 
 
-  void _setStationsStatus() async {
+  Future<void> _setStationsStatus() async {
     _stationsStatus = await _getStationsStatus();
     for (var stationStatus in _stationsStatus) {
       stationsStatusByStationIds.update(
@@ -153,7 +163,7 @@ class StationsData {
     }
   }
 
-  void _setStationsInformation() async {
+  Future<void> _setStationsInformation() async {
     _stationsInformation = await _getStationsInformation();
     for (var stationInformation in _stationsInformation) {
       stationsInformationByStationIds.update(

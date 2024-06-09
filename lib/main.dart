@@ -1,5 +1,4 @@
-// import 'package:bike_near_me/pages/home.dart';
-import 'package:bike_near_me/widgets/station_list.dart';
+import 'package:bike_near_me/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
@@ -21,10 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      // home: const HomePage(title: 'BikeNearMe'),
-      home: const Scaffold(
-        body: StationList(),
-      ),
+      home: const HomePage(title: 'BikeNearMe'),
     );
   }
 }

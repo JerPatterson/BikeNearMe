@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/services/stations_data.dart';
 import 'package:bike_near_me/services/systems_data.dart';
+import 'package:bike_near_me/widgets/station_list.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -29,10 +30,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final SystemsData _systemsData;
-  final Map<String, StationsData> _stationsData = {};
-  
+  final Map<String, StationsData> _stationsDataBySystemId = {};
   
   List<Marker> _markers = [];
+  List<StationsData> _stationsData = [];
+
   final Set<String> _knownPositions = {};
   MapPosition _position = const MapPosition(center: initialCenter);
 
@@ -47,16 +49,15 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  void initMapContent() {
-    Timer(const Duration(seconds: 1), () {
-      updateKnownPositions(_position, false);
-    });
+  void initMapRefresh() {
+    updateKnownPositions(_position, false);
     Timer.periodic(const Duration(seconds: 30), (_) {
       updateMarkers();
     });
   }
 
-  void updateKnownPositions(MapPosition position, bool _) {
+
+  Future<void> updateKnownPositions(MapPosition position, bool _) async {
     _position = position;
     double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
     double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
@@ -67,16 +68,13 @@ class _HomePageState extends State<HomePage> {
 
     var needToUpdateMarkers = false;
     for (var system in _systemsData.systems) {
-      if (_stationsData.containsKey(system.id)) continue;
+      if (_stationsDataBySystemId.containsKey(system.id)) continue;
       if (!system.isInBounds(lat, lon)) continue;
       needToUpdateMarkers = true;
-      _stationsData.putIfAbsent(
+      var stationsData = await StationsData.create(system);
+      _stationsDataBySystemId.putIfAbsent(
         system.id,
-        () => StationsData(
-          systemId: system.id,
-          stationStatusUrl: system.stationStatusUrl,
-          stationInformationUrl: system.stationInformationUrl,
-        )
+        () => stationsData
       );
     }
 
@@ -85,11 +83,13 @@ class _HomePageState extends State<HomePage> {
 
   void updateMarkers() {
     _markers.clear();
+    _stationsData.clear();
     for (var system in _systemsData.systems) {
       if (!system.isInBounds(_position.center!.latitude, _position.center!.longitude)) continue;
-      var stationsDataOfSystem = _stationsData[system.id];
-      if (stationsDataOfSystem == null) return;
-      for (var stationInformation in stationsDataOfSystem.getStationsInformation()) {
+      var stationsData = _stationsDataBySystemId[system.id];
+      if (stationsData == null) return;
+      _stationsData.add(stationsData);
+      for (var stationInformation in stationsData.getStationsInformation()) {
         _markers.add(
           Marker(
             width: 35.0,
@@ -103,8 +103,8 @@ class _HomePageState extends State<HomePage> {
                   size: 35.0,
                 ),
                 Icon(
-                  _typeNotDisplayed == "docks" ? stationsDataOfSystem.getStationIconFromBikesAvailability(system.id, stationInformation.id)
-                    : stationsDataOfSystem.getStationIconFromDocksAvailability(system.id, stationInformation.id),
+                  _typeNotDisplayed == "docks" ? stationsData.getStationIconFromBikesAvailability(stationInformation.id)
+                    : stationsData.getStationIconFromDocksAvailability(stationInformation.id),
                   color: system.color,
                   size: 35.0,
                 ),
@@ -116,9 +116,11 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         _markers = _markers;
+        _stationsData = _stationsData;
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,34 +129,46 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: initialCenter,
-          initialZoom: initialZoom,
-          minZoom: minZoom,
-          maxZoom: maxZoom,
-          onMapReady: initMapContent,
-          onPositionChanged: updateKnownPositions,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.app',
-            tileProvider: CancellableNetworkTileProvider(),
-          ),
-          MarkerLayer(
-            markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-          ),
-          RichAttributionWidget(
-            attributions: [
-              TextSourceAttribution(
-                'OpenStreetMap contributors',
-                onTap: () => {},
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: FlutterMap(
+              options: MapOptions(
+                initialCenter: initialCenter,
+                initialZoom: initialZoom,
+                minZoom: minZoom,
+                maxZoom: maxZoom,
+                onMapReady: initMapRefresh,
+                onPositionChanged: updateKnownPositions,
               ),
-            ],
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                  tileProvider: CancellableNetworkTileProvider(),
+                ),
+                MarkerLayer(
+                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+                ),
+                RichAttributionWidget(
+                  attributions: [
+                    TextSourceAttribution(
+                      'OpenStreetMap contributors',
+                      onTap: () => {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
+          const Expanded(
+            child: StationList()
+          ),
+        ]
       ),
+      
+      
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           switch (_typeNotDisplayed) {
