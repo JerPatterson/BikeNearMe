@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Future<void> updateKnownPositions(MapPosition position, bool _) async {
+  void updateKnownPositions(MapPosition position, bool _) {
     _position = position;
     double lat = double.parse(position.center!.latitude.toStringAsFixed(1));
     double lon = double.parse(position.center!.longitude.toStringAsFixed(1));
@@ -71,11 +71,12 @@ class _HomePageState extends State<HomePage> {
       if (_stationsDataBySystemId.containsKey(system.id)) continue;
       if (!system.isInBounds(lat, lon)) continue;
       needToUpdateMarkers = true;
-      var stationsData = await StationsData.create(system);
-      _stationsDataBySystemId.putIfAbsent(
-        system.id,
-        () => stationsData
-      );
+      StationsData.create(system).then((stationsData) {
+        _stationsDataBySystemId.putIfAbsent(
+          system.id,
+          () => stationsData
+        );
+      });
     }
 
     if (needToUpdateMarkers) updateMarkers();
@@ -103,7 +104,8 @@ class _HomePageState extends State<HomePage> {
                   size: 35.0,
                 ),
                 Icon(
-                  _typeNotDisplayed == "docks" ? stationsData.getStationIconFromBikesAvailability(stationInformation.id)
+                  _typeNotDisplayed == "docks" ? 
+                    stationsData.getStationIconFromBikesAvailability(stationInformation.id)
                     : stationsData.getStationIconFromDocksAvailability(stationInformation.id),
                   color: system.color,
                   size: 35.0,
@@ -166,9 +168,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ]
       ),
-      
-      
-      
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           switch (_typeNotDisplayed) {

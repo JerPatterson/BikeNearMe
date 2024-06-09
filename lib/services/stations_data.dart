@@ -52,7 +52,7 @@ class StationsData {
     return _stationsStatus;
   }
 
-  StationStatus? getStationStatusById(String systemId, String stationId) {
+  StationStatus? getStationStatusById(String stationId) {
     return stationsStatusByStationIds[stationId];
   }
 
