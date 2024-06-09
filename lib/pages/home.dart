@@ -45,15 +45,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _systemsData = SystemsData(database: FirebaseDatabase.instance);
   }
 
 
   void initMapRefresh() {
-    updateKnownPositions(_position, false);
-    Timer.periodic(const Duration(seconds: 30), (_) {
-      updateMarkers();
+    SystemsData.create(FirebaseDatabase.instance).then((systemsData) {
+      _systemsData = systemsData;
+      updateKnownPositions(_position, false);
+      Timer.periodic(const Duration(seconds: 30), (_) {
+        updateMarkers();
+      });
     });
+    
   }
 
 
@@ -66,20 +69,24 @@ class _HomePageState extends State<HomePage> {
     if (_knownPositions.contains(positionString)) return;
     _knownPositions.add(positionString);
 
-    var needToUpdateMarkers = false;
+    List<Future<StationsData>> futureStationsData = [];
     for (var system in _systemsData.systems) {
-      if (_stationsDataBySystemId.containsKey(system.id)) continue;
-      if (!system.isInBounds(lat, lon)) continue;
-      needToUpdateMarkers = true;
-      StationsData.create(system).then((stationsData) {
-        _stationsDataBySystemId.putIfAbsent(
-          system.id,
-          () => stationsData
-        );
-      });
+      if (_stationsDataBySystemId.containsKey(system.id) || !system.isInBounds(lat, lon)) continue;
+      futureStationsData.add(StationsData.create(system));
     }
 
-    if (needToUpdateMarkers) updateMarkers();
+    futureStationsData.wait.then((stationsDataList) {
+      for (StationsData stationsData in stationsDataList) {
+        _stationsDataBySystemId.putIfAbsent(
+          stationsData.systemId,
+          () => stationsData
+        );
+      }
+
+      if (stationsDataList.isNotEmpty) updateMarkers();
+    });
+
+    
   }
 
   void updateMarkers() {
