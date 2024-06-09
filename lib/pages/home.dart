@@ -114,12 +114,12 @@ class _HomePageState extends State<HomePage> {
           _createMarker(
             stationsSystem.getStationAvailabilityIcon(
               stationInformation.id,
-              _typeNotDisplayed == "bikes"
+              _typeNotDisplayed == "bikes",
             ),
             system.color,
             stationInformation.lat,
             stationInformation.lon,
-          )
+          ),
         );
       }
 
@@ -160,40 +160,39 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: FlutterMap(
-              options: MapOptions(
-                initialCenter: initialCenter,
-                initialZoom: initialZoom,
-                minZoom: minZoom,
-                maxZoom: maxZoom,
-                onMapReady: initMapRefresh,
-                onPositionChanged: updateKnownPositions,
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.app',
-                  tileProvider: CancellableNetworkTileProvider(),
-                ),
-                MarkerLayer(
-                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-                ),
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      'OpenStreetMap contributors',
-                      onTap: () => {},
-                    ),
-                  ],
-                ),
-              ],
+      body: Stack(
+        children: [
+          FlutterMap(
+            options: MapOptions(
+              initialCenter: initialCenter,
+              initialZoom: initialZoom,
+              minZoom: minZoom,
+              maxZoom: maxZoom,
+              onMapReady: initMapRefresh,
+              onPositionChanged: updateKnownPositions,
             ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.app',
+                tileProvider: CancellableNetworkTileProvider(),
+              ),
+              MarkerLayer(
+                markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+              ),
+              RichAttributionWidget(
+                attributions: [
+                  TextSourceAttribution(
+                    'OpenStreetMap contributors',
+                    onTap: () => {},
+                  ),
+                ],
+              ),
+            ],
           ),
-          const Expanded(
-            child: StationList()
+          StationList(
+            stationsSystems: _stationsSystems,
+            showDockAvailability: _typeNotDisplayed == "bikes",
           ),
         ]
       ),

@@ -18,6 +18,7 @@ class StationListTile extends StatelessWidget {
   final Color textColor;
   final IconData markerIcon;
 
+
   @override
   Widget build(BuildContext context) {
     return Column(

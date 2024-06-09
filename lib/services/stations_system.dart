@@ -13,6 +13,8 @@ class StationsSystem {
     required this.id,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
+    required this.color,
+    required this.textColor,
   }) {
     _initDataRefresh();
   }
@@ -22,6 +24,8 @@ class StationsSystem {
       id: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
+      color: system.color,
+      textColor: system.textColor,
     );
     
     await instance._setStationsInformation();
@@ -34,6 +38,8 @@ class StationsSystem {
   final String id;
   final String stationStatusUrl;
   final String stationInformationUrl;
+  final Color color;
+  final Color textColor;
 
   List<StationStatus> _stationsStatus = [];
   List<StationInformation> _stationsInformation = [];
