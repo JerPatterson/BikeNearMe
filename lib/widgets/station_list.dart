@@ -37,6 +37,7 @@ class StationList extends StatelessWidget {
       builder: (context, scrollController) {
         return ListView.builder(
           controller: scrollController,
+          physics: const ClampingScrollPhysics(),
           itemCount: _stationListTiles.length,
           itemBuilder: (context, index) {
             return _stationListTiles[index];

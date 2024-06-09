@@ -31,35 +31,43 @@ class StationListTile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    markerIcon,
-                    color: textColor,
-                    size: 60,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        distance,
-                        style: TextStyle(
-                          color: textColor,
-                          height: 1,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      markerIcon,
+                      color: textColor,
+                      size: 60,
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              distance,
+                              style: TextStyle(
+                                color: textColor,
+                                height: 1,
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              stationName,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ]
                         ),
                       ),
-                      Text(
-                        stationName,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ]
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
