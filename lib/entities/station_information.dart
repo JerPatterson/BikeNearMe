@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class StationInformation {
   StationInformation({
     required this.id,
@@ -21,8 +23,8 @@ class StationInformation {
 
   factory StationInformation.fromJson(Map<String, dynamic> json) => StationInformation(
     id: json['station_id'],
-    name: json['name'],
-    shortName: json['short_name'],
+    name: const Utf8Decoder().convert(json['name']!.toString().codeUnits),
+    shortName: const Utf8Decoder().convert(json['short_name']!.toString().codeUnits),
     lat: json['lat'],
     lon: json['lon'],
     isVirtualStation: json['is_virtual_station'],
