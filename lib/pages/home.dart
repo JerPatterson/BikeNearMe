@@ -38,6 +38,8 @@ class _HomePageState extends State<HomePage> {
   List<StationsSystem> _stationsSystems = [];
 
   final Set<String> _knownPositions = {};
+  double _latitudeRounded = initialCenter.latitude;
+  double _longitudeRounded = initialCenter.longitude;
   double _latitude = initialCenter.latitude;
   double _longitude = initialCenter.longitude;
 
@@ -64,14 +66,16 @@ class _HomePageState extends State<HomePage> {
 
 
   void updateKnownPositions(MapPosition position, bool _) {
-    _latitude = double.parse(position.center!.latitude.toStringAsFixed(1));
-    _longitude = double.parse(position.center!.longitude.toStringAsFixed(1));
-    if (_isKnownPosition(_latitude, _longitude)) return;
+    _latitude = position.center!.latitude;
+    _longitude = position.center!.longitude;
+    _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
+    _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
+    if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
 
     List<Future<StationsSystem>> stationSystems = [];
     for (System system in _systems.systems) {
       if (_isUnknownStationsSystem(system.id)
-        && system.isInBounds(_latitude, _longitude)) {
+        && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
         stationSystems.add(StationsSystem.create(system));
       }
     }
@@ -106,7 +110,7 @@ class _HomePageState extends State<HomePage> {
 
     for (System system in _systems.systems) {
       StationsSystem? stationsSystem = _stationsSystemByIds[system.id];
-      if (stationsSystem == null || !system.isInBounds(_latitude, _longitude)) continue;
+      if (stationsSystem == null || !system.isInBounds(_latitudeRounded, _longitudeRounded)) continue;
       _stationsSystems.add(stationsSystem);
 
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
