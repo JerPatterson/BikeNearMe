@@ -14,7 +14,6 @@ class StationList extends StatelessWidget {
     required this.showDockAvailability,
   }) {
     for (StationsSystem stationsSystem in stationsSystems) {
-      print(stationsSystem.getStationsInformation().length);
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
         final double distance = getDistance(latitude, longitude, stationInformation.lat, stationInformation.lon);
         _stationListTiles.add(

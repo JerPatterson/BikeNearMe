@@ -3,14 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 
 class Systems {
-  Systems._create({required this.database}) {
-    database.ref('systems').get().then((snapshot) {
-      for (var system in _systemsFromJson(snapshot.value)) {
-        systems.add(system);
-        _systemsById.putIfAbsent(system.id, () => system);
-      }
-    });
-  }
+  Systems._create({required this.database});
 
   static Future<Systems> create(FirebaseDatabase database) async {
     var instance = Systems._create(database: database);
