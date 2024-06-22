@@ -11,12 +11,21 @@ class StationListTile extends StatelessWidget {
     required this.markerIcon,
   });
 
-  final String distance;
+  final double distance;
   final String stationName;
   final int bikesAvailableCount;
   final Color color;
   final Color textColor;
   final IconData markerIcon;
+
+
+  String getDistanceString(double distance) {
+    if (distance > 1000) {
+      return "${double.parse((distance / 1000.0).toStringAsFixed(2))}km";
+    } else {
+      return "${double.parse(distance.toStringAsFixed(0))}m";
+    }
+  }
 
 
   @override
@@ -46,7 +55,7 @@ class StationListTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              distance,
+                              getDistanceString(distance),
                               style: TextStyle(
                                 color: textColor,
                                 height: 1,

@@ -191,6 +191,8 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           StationList(
+            latitude: _latitude,
+            longitude: _longitude,
             stationsSystems: _stationsSystems,
             showDockAvailability: _typeNotDisplayed == "bikes",
           ),
