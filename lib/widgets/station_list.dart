@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 class StationList extends StatelessWidget {
   StationList({
     super.key,
+    required this.controller,
     required this.latitude,
     required this.longitude,
     required this.stationsSystems,
@@ -32,6 +33,7 @@ class StationList extends StatelessWidget {
     _stationListTiles.sort((a, b) => a.distance.compareTo(b.distance));
   }
 
+  final ScrollController controller;
   final double latitude;
   final double longitude;
   final List<StationsSystem> stationsSystems;
@@ -63,16 +65,12 @@ class StationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      builder: (context, scrollController) {
-        return ListView.builder(
-          controller: scrollController,
-          physics: const ClampingScrollPhysics(),
-          itemCount: _stationListTiles.length,
-          itemBuilder: (context, index) {
-            return _stationListTiles[index];
-          },
-        );
+    return ListView.builder(
+      controller: controller,
+      physics: const ClampingScrollPhysics(),
+      itemCount: _stationListTiles.length,
+      itemBuilder: (context, index) {
+        return _stationListTiles[index];
       },
     );
   }

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 
 const minZoom = 10.0;
@@ -164,43 +165,46 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Stack(
-        children: [
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: initialCenter,
-              initialZoom: initialZoom,
-              minZoom: minZoom,
-              maxZoom: maxZoom,
-              onMapReady: initMapRefresh,
-              onPositionChanged: updateKnownPositions,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.app',
-                tileProvider: CancellableNetworkTileProvider(),
-              ),
-              MarkerLayer(
-                markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-              ),
-              RichAttributionWidget(
-                attributions: [
-                  TextSourceAttribution(
-                    'OpenStreetMap contributors',
-                    onTap: () => {},
-                  ),
-                ],
-              ),
-            ],
+      body: SlidingUpPanel(
+        body: FlutterMap(
+          options: MapOptions(
+            initialCenter: initialCenter,
+            initialZoom: initialZoom,
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            onMapReady: initMapRefresh,
+            onPositionChanged: updateKnownPositions,
           ),
-          StationList(
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.example.app',
+              tileProvider: CancellableNetworkTileProvider(),
+            ),
+            MarkerLayer(
+              markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+            ),
+            RichAttributionWidget(
+              attributions: [
+                TextSourceAttribution(
+                  'OpenStreetMap contributors',
+                  onTap: () => {},
+                ),
+              ],
+            ),
+          ],
+        ),
+        panelBuilder: (ScrollController sc) {
+          return StationList(
+            controller: sc,
             latitude: _latitude,
             longitude: _longitude,
             stationsSystems: _stationsSystems,
             showDockAvailability: _typeNotDisplayed == "bikes",
-          ),
-        ]
+          );
+        },
+        parallaxEnabled: true,
+        parallaxOffset: 0.5,
       ),
 
       floatingActionButton: FloatingActionButton(
