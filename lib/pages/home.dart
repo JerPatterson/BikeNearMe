@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Positioned(
-              top: (MediaQuery.of(context).size.height - (positionIconSize + 4) - 215) / 2,
+              top: (MediaQuery.of(context).size.height - (positionIconSize + 4)) / 2,
               right: (MediaQuery.of(context).size.width - (positionIconSize + 4)) / 2,
               child: const Icon(
                 Icons.circle,
@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Positioned(
-              top: (MediaQuery.of(context).size.height - positionIconSize - 215) / 2,
+              top: (MediaQuery.of(context).size.height - positionIconSize) / 2,
               right: (MediaQuery.of(context).size.width - positionIconSize) / 2,
               child: const Icon(
                 Icons.circle,
