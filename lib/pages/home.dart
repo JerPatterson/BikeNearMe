@@ -17,6 +17,7 @@ const minZoom = 10.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
+const positionIconSize = 20.0;
 
 
 class HomePage extends StatefulWidget {
@@ -166,33 +167,55 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title),
       ),
       body: SlidingUpPanel(
-        body: FlutterMap(
-          options: MapOptions(
-            initialCenter: initialCenter,
-            initialZoom: initialZoom,
-            minZoom: minZoom,
-            maxZoom: maxZoom,
-            onMapReady: initMapRefresh,
-            onPositionChanged: updateKnownPositions,
-          ),
+        body: Stack(
           children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.example.app',
-              tileProvider: CancellableNetworkTileProvider(),
-            ),
-            MarkerLayer(
-              markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-            ),
-            RichAttributionWidget(
-              attributions: [
-                TextSourceAttribution(
-                  'OpenStreetMap contributors',
-                  onTap: () => {},
+            FlutterMap(
+              options: MapOptions(
+                initialCenter: initialCenter,
+                initialZoom: initialZoom,
+                minZoom: minZoom,
+                maxZoom: maxZoom,
+                onMapReady: initMapRefresh,
+                onPositionChanged: updateKnownPositions,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                  tileProvider: CancellableNetworkTileProvider(),
+                ),
+                MarkerLayer(
+                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+                ),
+                RichAttributionWidget(
+                  attributions: [
+                    TextSourceAttribution(
+                      'OpenStreetMap contributors',
+                      onTap: () => {},
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+            Positioned(
+              top: (MediaQuery.of(context).size.height - (positionIconSize + 4) - 215) / 2,
+              right: (MediaQuery.of(context).size.width - (positionIconSize + 4)) / 2,
+              child: const Icon(
+                Icons.circle,
+                size: positionIconSize + 4,
+                color: Colors.white
+              ),
+            ),
+            Positioned(
+              top: (MediaQuery.of(context).size.height - positionIconSize - 215) / 2,
+              right: (MediaQuery.of(context).size.width - positionIconSize) / 2,
+              child: const Icon(
+                Icons.circle,
+                size: positionIconSize,
+                color: Color(0xFFB219B7)
+              ),
+            ),
+          ]
         ),
         panelBuilder: (ScrollController sc) {
           return StationList(
@@ -203,8 +226,11 @@ class _HomePageState extends State<HomePage> {
             showDockAvailability: _typeNotDisplayed == "bikes",
           );
         },
+        maxHeight: MediaQuery.of(context).size.height,
+        minHeight: MediaQuery.of(context).size.height * 0.25,
+        panelSnapping: false,
         parallaxEnabled: true,
-        parallaxOffset: 0.5,
+        parallaxOffset: 0.6,
       ),
 
       floatingActionButton: FloatingActionButton(
