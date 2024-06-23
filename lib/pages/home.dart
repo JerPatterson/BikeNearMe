@@ -177,6 +177,9 @@ class _HomePageState extends State<HomePage> {
                 maxZoom: maxZoom,
                 onMapReady: initMapRefresh,
                 onPositionChanged: updateKnownPositions,
+                interactionOptions: const InteractionOptions(
+                  flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                )
               ),
               children: [
                 TileLayer(
