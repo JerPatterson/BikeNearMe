@@ -23,7 +23,7 @@ class StationListTile extends StatelessWidget {
     if (distance > 1000) {
       return "${double.parse((distance / 1000.0).toStringAsFixed(2))}km";
     } else {
-      return "${double.parse(distance.toStringAsFixed(0))}m";
+      return "${distance.round()}m";
     }
   }
 

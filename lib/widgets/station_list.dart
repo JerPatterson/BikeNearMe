@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/services/stations_system.dart';
 import 'package:bike_near_me/widgets/station_list_tile.dart';
@@ -16,6 +15,7 @@ class StationList extends StatelessWidget {
     for (StationsSystem stationsSystem in stationsSystems) {
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
         final double distance = getDistance(latitude, longitude, stationInformation.lat, stationInformation.lon);
+        if (distance > maxDistanceToDisplay) continue;
         _stationListTiles.add(
           StationListTile(
             distance: distance,
@@ -37,6 +37,7 @@ class StationList extends StatelessWidget {
   final List<StationsSystem> stationsSystems;
   final bool showDockAvailability;
 
+  static const maxDistanceToDisplay = 2000;
   final List<StationListTile> _stationListTiles = [];
 
 
