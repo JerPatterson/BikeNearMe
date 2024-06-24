@@ -23,14 +23,14 @@ const stationMarkerIconSize = 35.0;
 const positionIconSize = 20.0;
 
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class StationsMapPage extends StatefulWidget {
+  const StationsMapPage({super.key});
   
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<StationsMapPage> createState() => _StationsMapPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _StationsMapPageState extends State<StationsMapPage> {
   late final Systems _systems;
   final Map<String, StationsSystem> _stationsSystemByIds = {};
   
@@ -172,6 +172,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: SlidingUpPanel(
         body: Stack(
           children: [
