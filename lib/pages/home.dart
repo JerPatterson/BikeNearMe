@@ -17,16 +17,14 @@ const minZoom = 10.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
+
+const markerUpdatesIntervallSeconds = 30;
+const stationMarkerIconSize = 35.0;
 const positionIconSize = 20.0;
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    super.key,
-    required this.title
-  });
-
-  final String title;
+  const HomePage({super.key});
   
   @override
   State<HomePage> createState() => _HomePageState();
@@ -36,15 +34,14 @@ class _HomePageState extends State<HomePage> {
   late final Systems _systems;
   final Map<String, StationsSystem> _stationsSystemByIds = {};
   
-  List<Marker> _markers = [];
-  List<StationsSystem> _stationsSystems = [];
-
   final Set<String> _knownPositions = {};
   double _latitudeRounded = initialCenter.latitude;
   double _longitudeRounded = initialCenter.longitude;
   double _latitude = initialCenter.latitude;
   double _longitude = initialCenter.longitude;
 
+  List<Marker> _markers = [];
+  List<StationsSystem> _stationsSystems = [];
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
 
@@ -59,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     Systems.create(FirebaseDatabase.instance).then((systems) {
       _systems = systems;
       updateKnownPositions(const MapPosition(center: initialCenter), false);
-      Timer.periodic(const Duration(seconds: 30), (_) {
+      Timer.periodic(const Duration(seconds: markerUpdatesIntervallSeconds), (_) {
         updateMarkers();
       });
     });
@@ -143,20 +140,20 @@ class _HomePageState extends State<HomePage> {
 
   Marker _createMarker(IconData icon, Color color, double lat, double lon) {
     return Marker(
-      width: 35.0,
-      height: 35.0,
+      width: stationMarkerIconSize,
+      height: stationMarkerIconSize,
       point: LatLng(lat, lon),
       child: Stack(
         children: [
           const Icon(
             BikeShare.marker_background,
             color: Colors.white,
-            size: 35.0,
+            size: stationMarkerIconSize,
           ),
           Icon(
             icon,
             color: color,
-            size: 35.0,
+            size: stationMarkerIconSize,
           ),
         ],
       ),
@@ -167,10 +164,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: SlidingUpPanel(
         body: Stack(
           children: [
@@ -238,7 +231,7 @@ class _HomePageState extends State<HomePage> {
         minHeight: MediaQuery.of(context).size.height * 0.25,
         panelSnapping: false,
         parallaxEnabled: true,
-        parallaxOffset: 0.6,
+        parallaxOffset: 0.75,
       ),
 
       floatingActionButton: FloatingActionButton(
