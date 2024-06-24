@@ -68,8 +68,11 @@ class _HomePageState extends State<HomePage> {
 
 
   void updateKnownPositions(MapPosition position, bool _) {
-    _latitude = position.center!.latitude;
-    _longitude = position.center!.longitude;
+    setState(() {
+      _latitude = position.center!.latitude;
+      _longitude = position.center!.longitude;
+    });
+
     _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
     _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
     if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
