@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 
 const minZoom = 10.0;
 const maxZoom = 20.0;
@@ -42,6 +42,8 @@ class _HomePageState extends State<HomePage> {
 
   List<Marker> _markers = [];
   List<StationsSystem> _stationsSystems = [];
+  int _numberOfStations = 0;
+
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
 
@@ -160,6 +162,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void updateNbOfStations(int numberOfStations) {
+    setState(() {
+      _numberOfStations = numberOfStations;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -221,17 +229,19 @@ class _HomePageState extends State<HomePage> {
         panelBuilder: (ScrollController sc) {
           return StationList(
             controller: sc,
+            updateNbOfStations: updateNbOfStations,
             latitude: _latitude,
             longitude: _longitude,
             stationsSystems: _stationsSystems,
             showDockAvailability: _typeNotDisplayed == "bikes",
           );
         },
-        maxHeight: MediaQuery.of(context).size.height,
-        minHeight: MediaQuery.of(context).size.height * 0.25,
+        maxHeight: min(_numberOfStations * 90.8, MediaQuery.of(context).size.height),
+        minHeight: min(_numberOfStations * 90.8, MediaQuery.of(context).size.height * 0.35),
         panelSnapping: false,
         parallaxEnabled: true,
         parallaxOffset: 0.75,
+        renderPanelSheet: false,
       ),
 
       floatingActionButton: FloatingActionButton(

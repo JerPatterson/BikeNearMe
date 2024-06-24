@@ -4,10 +4,14 @@ import 'package:bike_near_me/services/stations_system.dart';
 import 'package:bike_near_me/widgets/station_list_tile.dart';
 import 'package:flutter/material.dart';
 
+typedef UpdateNbOfStationsFunction = void Function(int nbOfStations);
+
+
 class StationList extends StatelessWidget {
   StationList({
     super.key,
     required this.controller,
+    required this.updateNbOfStations,
     required this.latitude,
     required this.longitude,
     required this.stationsSystems,
@@ -31,9 +35,15 @@ class StationList extends StatelessWidget {
     }
 
     _stationListTiles.sort((a, b) => a.distance.compareTo(b.distance));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateNbOfStations(_stationListTiles.length);
+    });
+    
   }
 
   final ScrollController controller;
+  final UpdateNbOfStationsFunction updateNbOfStations;
+
   final double latitude;
   final double longitude;
   final List<StationsSystem> stationsSystems;
@@ -45,7 +55,6 @@ class StationList extends StatelessWidget {
 
   double getDistance(double latA, double lonA, double latB, double lonB) {
     const double earthRadius = 6371.0;     
-    
     const double factor = 0.017453292519943295;
     latA *= factor;
     lonA *=  factor;
@@ -67,6 +76,7 @@ class StationList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: controller,
+      shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       itemCount: _stationListTiles.length,
       itemBuilder: (context, index) {
