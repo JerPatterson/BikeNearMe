@@ -77,20 +77,22 @@ class _HomePageState extends State<HomePage> {
     _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
     if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
 
-    List<Future<StationsSystem>> stationSystems = [];
+    List<Future<StationsSystem>> futureStationsSystems = [];
     for (System system in _systems.systems) {
       if (_isUnknownStationsSystem(system.id)
         && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
-        stationSystems.add(StationsSystem.create(system));
+        futureStationsSystems.add(StationsSystem.create(system));
       }
     }
 
-    stationSystems.wait.then((stationsSystems) {
+    futureStationsSystems.wait.then((stationsSystems) {
       for (StationsSystem stationsSystem in stationsSystems) {
-        _stationsSystemByIds.putIfAbsent(
-          stationsSystem.id,
-          () => stationsSystem
-        );
+        setState(() {
+          _stationsSystemByIds.putIfAbsent(
+            stationsSystem.id,
+            () => stationsSystem
+          );
+        });
       }
 
       if (stationsSystems.isNotEmpty) updateMarkers();
