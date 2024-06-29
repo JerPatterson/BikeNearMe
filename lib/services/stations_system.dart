@@ -71,6 +71,14 @@ class StationsSystem {
   }
 
 
+  int getStationAvailability(String stationId, bool showDockAvailability) {
+    var stationStatus = stationsStatusByStationIds[stationId];
+    var stationInformation = stationsInformationByStationIds[stationId];
+
+    if (showDockAvailability) return stationInformation!.capacity! - stationStatus!.numVehiclesAvailable;
+    return stationStatus!.numVehiclesAvailable;
+  }
+
   IconData getStationAvailabilityIcon(String stationId, bool showDockAvailability) {
     if (showDockAvailability) return _getStationAvailabilityIconForDocks(stationId);
     return _getStationAvailabilityIconForBikes(stationId);

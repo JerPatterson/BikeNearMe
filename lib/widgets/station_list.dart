@@ -25,7 +25,8 @@ class StationList extends StatelessWidget {
           StationListTile(
             distance: distance,
             stationName: stationInformation.name,
-            bikesAvailableCount: stationsSystem.getStationStatusById(stationInformation.id)!.numVehiclesAvailable,
+            availabilityCount: stationsSystem.getStationAvailability(stationInformation.id, showDockAvailability),
+            showDockAvailability: showDockAvailability,
             color: stationsSystem.color,
             textColor: stationsSystem.textColor,
             markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),

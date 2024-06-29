@@ -5,7 +5,8 @@ class StationListTile extends StatelessWidget {
     super.key,
     required this.distance,
     required this.stationName,
-    required this.bikesAvailableCount,
+    required this.availabilityCount,
+    required this.showDockAvailability,
     required this.color,
     required this.textColor,
     required this.markerIcon,
@@ -13,7 +14,8 @@ class StationListTile extends StatelessWidget {
 
   final double distance;
   final String stationName;
-  final int bikesAvailableCount;
+  final int availabilityCount;
+  final bool showDockAvailability;
   final Color color;
   final Color textColor;
   final IconData markerIcon;
@@ -82,7 +84,7 @@ class StationListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    bikesAvailableCount.toString(),
+                    availabilityCount.toString(),
                     style: TextStyle(
                       color: textColor,
                       height: 1,
@@ -91,7 +93,7 @@ class StationListTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "vélos",
+                    showDockAvailability ? "places" : "vélos",
                     style: TextStyle(
                       color: textColor,
                       fontSize: 14,

@@ -172,7 +172,6 @@ class _StationsMapPageState extends State<StationsMapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       body: SlidingUpPanel(
         body: Stack(
           children: [
