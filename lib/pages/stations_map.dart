@@ -227,23 +227,28 @@ class _StationsMapPageState extends State<StationsMapPage> {
           ]
         ),
         panelBuilder: (ScrollController sc) {
-          return StationList(
-            controller: sc,
-            updateNbOfStations: updateNbOfStations,
-            latitude: _latitude,
-            longitude: _longitude,
-            stationsSystems: _stationsSystems,
-            showDockAvailability: _typeNotDisplayed == "bikes",
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: _stationsSystems.isEmpty ? 
+                Colors.transparent : _stationsSystems.last.color,
+            ),
+            child: StationList(
+              controller: sc,
+              updateNbOfStations: updateNbOfStations,
+              latitude: _latitude,
+              longitude: _longitude,
+              stationsSystems: _stationsSystems,
+              showDockAvailability: _typeNotDisplayed == "bikes",
+            ),
           );
         },
-        maxHeight: min(_numberOfStations * 90.8, MediaQuery.of(context).size.height),
-        minHeight: min(_numberOfStations * 90.8, MediaQuery.of(context).size.height * 0.35),
+        maxHeight: min(_numberOfStations * 90.8 + 24, MediaQuery.of(context).size.height),
+        minHeight: min(_numberOfStations * 90.8 + 24, MediaQuery.of(context).size.height * 0.35),
+        renderPanelSheet: false,
         panelSnapping: false,
         parallaxEnabled: true,
         parallaxOffset: 0.75,
-        renderPanelSheet: false,
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           switch (_typeNotDisplayed) {

@@ -79,6 +79,7 @@ class StationList extends StatelessWidget {
       controller: controller,
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
       itemCount: _stationListTiles.length,
       itemBuilder: (context, index) {
         return _stationListTiles[index];
