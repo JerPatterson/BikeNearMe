@@ -1,5 +1,6 @@
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
+import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -9,10 +10,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 const minZoom = 10.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
-const initialCenter = LatLng(45.504789, -73.613187);
 
-const markerUpdatesIntervallSeconds = 30;
-const stationMarkerIconSize = 35.0;
+const stationMarkerIconSize = 45.0;
 const positionIconSize = 20.0;
 
 
@@ -21,10 +20,16 @@ class StationInfoPage extends StatefulWidget {
     super.key,
     required this.stationInformation,
     required this.stationStatus,
+    required this.markerIcon,
+    required this.textColor,
+    required this.color,
   });
 
   final StationInformation stationInformation;
   final StationStatus stationStatus;
+  final IconData markerIcon;
+  final Color textColor;
+  final Color color;
 
   @override
   State<StationInfoPage> createState() => _StationInfoPageState();
@@ -33,59 +38,59 @@ class StationInfoPage extends StatefulWidget {
 class _StationInfoPageState extends State<StationInfoPage> {
   @override
   Widget build(BuildContext context) {
+    final stationPosition = LatLng(widget.stationInformation.lat, widget.stationInformation.lon);
+  
     return Scaffold(
       body: SlidingUpPanel(
-        body: Stack(
+        body: FlutterMap(
+          options: MapOptions(
+            initialCenter: stationPosition,
+            initialZoom: initialZoom,
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+            )
+          ),
           children: [
-            FlutterMap(
-              options: const MapOptions(
-                initialCenter: initialCenter,
-                initialZoom: initialZoom,
-                minZoom: minZoom,
-                maxZoom: maxZoom,
-                interactionOptions: InteractionOptions(
-                  flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                )
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.app',
-                  tileProvider: CancellableNetworkTileProvider(),
-                ),
-                const MarkerLayer(
-                  markers: [],
-                ),
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      'OpenStreetMap contributors',
-                      onTap: () => {},
-                    ),
-                  ],
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.example.app',
+              tileProvider: CancellableNetworkTileProvider(),
+            ),
+            MarkerLayer(
+              markers: [
+                Marker(
+                  point: stationPosition,
+                  child: Stack(
+                    children: [
+                      const Icon(
+                        BikeShare.marker_background,
+                        color: Colors.white,
+                        size: stationMarkerIconSize,
+                      ),
+                      Icon(
+                        widget.markerIcon,
+                        color: widget.color,
+                        size: stationMarkerIconSize,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            Positioned(
-              top: (MediaQuery.of(context).size.height - (positionIconSize + 4)) / 2,
-              right: (MediaQuery.of(context).size.width - (positionIconSize + 4)) / 2,
-              child: const Icon(
-                Icons.circle,
-                size: positionIconSize + 4,
-                color: Colors.white
-              ),
+            RichAttributionWidget(
+              attributions: [
+                TextSourceAttribution(
+                  'OpenStreetMap contributors',
+                  onTap: () => {},
+                ),
+              ],
             ),
-            Positioned(
-              top: (MediaQuery.of(context).size.height - positionIconSize) / 2,
-              right: (MediaQuery.of(context).size.width - positionIconSize) / 2,
-              child: const Icon(
-                Icons.circle,
-                size: positionIconSize,
-                color: Color(0xFFB219B7)
-              ),
-            ),
-          ]
+          ],
         ),
+
+        panel: const Placeholder(),
       ),
     );
   }
