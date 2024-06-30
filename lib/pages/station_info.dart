@@ -227,8 +227,12 @@ class _StationInfoPageState extends State<StationInfoPage> {
             ),
           ],
         ),
-        
+        maxHeight: 470,
+        minHeight: 170,
         renderPanelSheet: false,
+        panelSnapping: false,
+        parallaxEnabled: true,
+        parallaxOffset: 0.75,
       ),
     );
   }
