@@ -2,6 +2,7 @@ class StationStatus {
   StationStatus({
     required this.id,
     required this.numVehiclesAvailable,
+    this.numElectricBikesAvailable,
     this.numVehiclesDisabled,
     this.numDocksAvailable,
     this.numDocksDisabled,
@@ -16,6 +17,7 @@ class StationStatus {
   int? numVehiclesDisabled;
   int? numDocksAvailable;
   int? numDocksDisabled;
+  int? numElectricBikesAvailable;
   bool isInstalled;
   bool isRenting;
   bool isReturning;
@@ -24,6 +26,7 @@ class StationStatus {
   factory StationStatus.fromJson(Map<String, dynamic> json) => StationStatus(
     id: json['station_id'],
     numVehiclesAvailable: json['num_bikes_available'],
+    numElectricBikesAvailable: json['num_ebikes_available'],
     numVehiclesDisabled: json['num_bikes_disabled'],
     numDocksAvailable: json['num_docks_available'],
     numDocksDisabled: json['num_docks_disabled'],
