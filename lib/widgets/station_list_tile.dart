@@ -1,24 +1,20 @@
+import 'package:bike_near_me/entities/station_information.dart';
+import 'package:bike_near_me/services/stations_system.dart';
 import 'package:flutter/material.dart';
 
 class StationListTile extends StatelessWidget {
   const StationListTile({
     super.key,
     required this.distance,
-    required this.stationName,
-    required this.availabilityCount,
+    required this.stationInformation,
+    required this.stationsSystem,
     required this.showDockAvailability,
-    required this.color,
-    required this.textColor,
-    required this.markerIcon,
   });
 
   final double distance;
-  final String stationName;
-  final int availabilityCount;
+  final StationInformation stationInformation;
+  final StationsSystem stationsSystem;
   final bool showDockAvailability;
-  final Color color;
-  final Color textColor;
-  final IconData markerIcon;
 
 
   String getDistanceString(double distance) {
@@ -37,7 +33,7 @@ class StationListTile extends StatelessWidget {
         Container(
           padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
           decoration: BoxDecoration(
-            color: color,
+            color: stationsSystem.color,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,8 +42,8 @@ class StationListTile extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      markerIcon,
-                      color: textColor,
+                      stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
+                      color: stationsSystem.textColor,
                       size: 60,
                     ),
                     Expanded(
@@ -59,17 +55,17 @@ class StationListTile extends StatelessWidget {
                             Text(
                               getDistanceString(distance),
                               style: TextStyle(
-                                color: textColor,
+                                color: stationsSystem.textColor,
                                 height: 1,
                                 fontSize: 40,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              stationName,
+                              stationInformation.name,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: textColor,
+                                color: stationsSystem.textColor,
                                 fontSize: 18,
                               ),
                             ),
@@ -84,9 +80,9 @@ class StationListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    availabilityCount.toString(),
+                    stationsSystem.getStationAvailability(stationInformation.id, showDockAvailability).toString(),
                     style: TextStyle(
-                      color: textColor,
+                      color: stationsSystem.textColor,
                       height: 1,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -95,7 +91,7 @@ class StationListTile extends StatelessWidget {
                   Text(
                     showDockAvailability ? "places" : "vélos",
                     style: TextStyle(
-                      color: textColor,
+                      color: stationsSystem.textColor,
                       fontSize: 14,
                     ),
                   ),

@@ -24,12 +24,9 @@ class StationList extends StatelessWidget {
         _stationListTiles.add(
           StationListTile(
             distance: distance,
-            stationName: stationInformation.name,
-            availabilityCount: stationsSystem.getStationAvailability(stationInformation.id, showDockAvailability),
+            stationInformation: stationInformation,
+            stationsSystem: stationsSystem,
             showDockAvailability: showDockAvailability,
-            color: stationsSystem.color,
-            textColor: stationsSystem.textColor,
-            markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
           ),
         );
       }
