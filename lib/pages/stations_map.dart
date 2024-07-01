@@ -258,14 +258,16 @@ class _StationsMapPageState extends State<StationsMapPage> {
               updateMarkers();
             case "docks":
               _typeNotDisplayed = "bikes";
-              _switchMarkerTypeIcon = BikeShare.bike;
+              _switchMarkerTypeIcon = Icons.pedal_bike;
               updateMarkers();
               break;
           }
         },
         tooltip: 'Display $_typeNotDisplayed instead',
+        mini: true,
         child: Icon(_switchMarkerTypeIcon),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
     );
   }
 }

@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'BikeNearMe',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF17273E)),
         useMaterial3: true,
       ),
       home: const StationsMapPage(),
