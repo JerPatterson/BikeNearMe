@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:location/location.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
@@ -39,6 +40,9 @@ class _StationsMapPageState extends State<StationsMapPage> {
   double _longitudeRounded = initialCenter.longitude;
   double _latitude = initialCenter.latitude;
   double _longitude = initialCenter.longitude;
+  double _userLatitude = initialCenter.latitude;
+  double _userLongitude = initialCenter.longitude;
+  bool _userLocationProvided = false;
 
   List<Marker> _markers = [];
   List<StationsSystem> _stationsSystems = [];
@@ -51,8 +55,33 @@ class _StationsMapPageState extends State<StationsMapPage> {
   @override
   void initState() {
     super.initState();
+    initUserLocation();
   }
 
+
+  void initUserLocation() async {
+    var location = Location();
+    var serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) return;
+    }
+
+    var permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) return;
+    }
+
+    _userLocationProvided = true;
+    final currentLocation = await location.getLocation();
+    _userLatitude = currentLocation.latitude!;
+    _userLongitude = currentLocation.longitude!;
+    location.onLocationChanged.listen((currentLocation) {
+      _userLatitude = currentLocation.latitude!;
+      _userLongitude = currentLocation.longitude!;
+    });
+  }
 
   void initMapRefresh() {
     Systems.create(FirebaseDatabase.instance).then((systems) {
@@ -177,7 +206,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
           children: [
             FlutterMap(
               options: MapOptions(
-                initialCenter: initialCenter,
+                initialCenter: LatLng(_userLatitude, _userLongitude),
                 initialZoom: initialZoom,
                 minZoom: minZoom,
                 maxZoom: maxZoom,
@@ -192,6 +221,28 @@ class _StationsMapPageState extends State<StationsMapPage> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
                   tileProvider: CancellableNetworkTileProvider(),
+                ),
+                MarkerLayer(
+                  markers: !_userLocationProvided ? [] : [
+                    Marker(
+                      point: LatLng(_userLatitude, _userLongitude),
+                      child: const Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: positionIconSize + 4,
+                            color: Colors.white
+                          ),
+                          Icon(
+                            Icons.circle,
+                            size: positionIconSize,
+                            color: Color(0xFF217DFC)
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 MarkerLayer(
                   markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
