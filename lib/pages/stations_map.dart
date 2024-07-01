@@ -229,7 +229,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
         panelBuilder: (ScrollController sc) {
           return DecoratedBox(
             decoration: BoxDecoration(
-              color: _stationsSystems.isEmpty ? 
+              color: _numberOfStations == 0 ? 
                 Colors.transparent : _stationsSystems.last.color,
             ),
             child: StationList(
