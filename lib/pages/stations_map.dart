@@ -116,7 +116,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
     for (System system in _systems.systems) {
       StationsSystem? stationsSystem = _stationsSystemByIds[system.id];
-      if (stationsSystem == null || !system.isInBounds(_latitudeRounded, _longitudeRounded)) continue;
+      if (stationsSystem == null || !system.isInBounds(_latitude, _longitude)) continue;
       _stationsSystems.add(stationsSystem);
 
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
