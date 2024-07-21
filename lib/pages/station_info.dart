@@ -96,29 +96,58 @@ class _StationInfoPageState extends State<StationInfoPage> {
         panel: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 12),
+              padding: const EdgeInsets.only(left: 12, right: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.ideographic,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "${widget.stationStatus.numVehiclesAvailable}",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: widget.color,
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.ideographic,
+                    children: [
+                      Text(
+                        "${widget.stationStatus.numVehiclesAvailable}",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: widget.color,
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "/${widget.stationInformation.capacity}",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: widget.color,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "/${widget.stationInformation.capacity}",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: widget.color,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
+                  ElevatedButton.icon(
+                    icon: Icon(
+                      Icons.bar_chart,
+                      color: widget.textColor,
+                      size: 20,
                     ),
+                    label: Text(
+                      "Disponibilité",
+                      style: TextStyle(
+                        color: widget.textColor,
+                        fontSize: 20,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(12),
+                      backgroundColor: widget.color,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      
+                    },
                   ),
                 ],
               ),
