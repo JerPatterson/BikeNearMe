@@ -1,4 +1,4 @@
-# bike_near_me
+# BikeNearMe
 
 A new Flutter project.
 
