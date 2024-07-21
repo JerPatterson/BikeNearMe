@@ -75,7 +75,13 @@ class StationsSystem {
     var stationStatus = stationsStatusByStationIds[stationId];
     var stationInformation = stationsInformationByStationIds[stationId];
 
-    if (showDockAvailability) return stationInformation!.capacity! - stationStatus!.numVehiclesAvailable;
+    if (showDockAvailability) {
+      if (stationStatus!.numDocksAvailable != null) {
+        return stationStatus.numDocksAvailable!;
+      } else {
+        return stationInformation!.capacity! - stationStatus.numVehiclesAvailable;
+      }
+    }
     return stationStatus!.numVehiclesAvailable;
   }
 
@@ -135,7 +141,11 @@ class StationsSystem {
       var availability = 0.0;
       var capacity = stationInformation!.capacity;
       if (stationStatus != null && capacity != null) {
-        availability = 10.0 - stationStatus.numVehiclesAvailable * 10 / capacity;
+        if (stationStatus.numDocksAvailable != null) {
+          availability = stationStatus.numDocksAvailable! * 10 / capacity;
+        } else {
+          availability = 10.0 - stationStatus.numVehiclesAvailable * 10 / capacity;
+        }
       }
       
       if (availability == 0.0) return BikeShare.marker_docks_0;
