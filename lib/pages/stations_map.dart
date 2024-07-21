@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/widgets.dart';
 import 'package:location/location.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
@@ -51,6 +52,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
 
+  final MapController _mapController = MapController();
+
 
   @override
   void initState() {
@@ -77,6 +80,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
     final currentLocation = await location.getLocation();
     _userLatitude = currentLocation.latitude!;
     _userLongitude = currentLocation.longitude!;
+    _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
     location.onLocationChanged.listen((currentLocation) {
       _userLatitude = currentLocation.latitude!;
       _userLongitude = currentLocation.longitude!;
@@ -214,13 +218,30 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 onPositionChanged: updateKnownPositions,
                 interactionOptions: const InteractionOptions(
                   flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                )
+                ),
               ),
+              mapController: _mapController,
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
                   tileProvider: CancellableNetworkTileProvider(),
+                ),
+                const Align(
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.circle,
+                    size: positionIconSize + 4,
+                    color: Colors.white
+                  ),
+                ),
+                const Align(
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.circle,
+                    size: positionIconSize,
+                    color: Color(0xFFB219B7)
+                  ),
                 ),
                 MarkerLayer(
                   markers: !_userLocationProvided ? [] : [
@@ -256,24 +277,6 @@ class _StationsMapPageState extends State<StationsMapPage> {
                   ],
                 ),
               ],
-            ),
-            Positioned(
-              top: (MediaQuery.of(context).size.height - (positionIconSize + 4)) / 2,
-              right: (MediaQuery.of(context).size.width - (positionIconSize + 4)) / 2,
-              child: const Icon(
-                Icons.circle,
-                size: positionIconSize + 4,
-                color: Colors.white
-              ),
-            ),
-            Positioned(
-              top: (MediaQuery.of(context).size.height - positionIconSize) / 2,
-              right: (MediaQuery.of(context).size.width - positionIconSize) / 2,
-              child: const Icon(
-                Icons.circle,
-                size: positionIconSize,
-                color: Color(0xFFB219B7)
-              ),
             ),
           ]
         ),
