@@ -12,7 +12,7 @@ class Systems {
     var snapshot = await database.ref('systems').get();
     for (var system in instance._systemsFromJson(snapshot.value)) {
       instance.systems.add(system);
-      instance._systemsById.putIfAbsent(system.id, () => system);
+      instance._systemById.putIfAbsent(system.id, () => system);
     }
 
     return instance;
@@ -20,17 +20,23 @@ class Systems {
 
   final FirebaseDatabase database;
   final List<System> systems = [];
-  final Map<String, System> _systemsById = {};
+  final Map<String, System> _systemById = {};
+  final Map<String, SystemAvailability> _systemAvailabilityById = {};
 
 
   System? getSystemById(String id) {
-    return _systemsById[id];
+    return _systemById[id];
   }
 
   Future<SystemAvailability?> getSystemAvailabilityById(String id) async {
     try {
-      var snapshot = await database.ref(id).get();
-      return SystemAvailability.fromJson(Map<String, dynamic>.from(snapshot.value as Map));
+      DataSnapshot? snapshot;
+      if (_systemAvailabilityById.containsKey(id)) {
+        snapshot = await database.ref(id).get();
+      }
+      return _systemAvailabilityById.putIfAbsent(id, () {
+        return SystemAvailability.fromJson(Map<String, dynamic>.from(snapshot!.value as Map));
+      });
     } catch (_) {
       return null;
     }
