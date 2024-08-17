@@ -37,6 +37,7 @@ class StationListTile extends StatelessWidget {
             builder: (context) => StationInfoPage(
               stationInformation: stationInformation,
               stationStatus: stationsSystem.getStationStatusById(stationInformation.id)!,
+              stationAvailability: stationsSystem.systemAvailability?.getStationAvailability(stationInformation.id),
               markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, false),
               textColor: stationsSystem.textColor,
               color: stationsSystem.color,

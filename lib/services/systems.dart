@@ -31,7 +31,7 @@ class Systems {
   Future<SystemAvailability?> getSystemAvailabilityById(String id) async {
     try {
       DataSnapshot? snapshot;
-      if (_systemAvailabilityById.containsKey(id)) {
+      if (!_systemAvailabilityById.containsKey(id)) {
         snapshot = await database.ref(id).get();
       }
       return _systemAvailabilityById.putIfAbsent(id, () {

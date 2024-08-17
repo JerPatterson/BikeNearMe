@@ -112,7 +112,9 @@ class _StationsMapPageState extends State<StationsMapPage> {
     for (System system in _systems.systems) {
       if (_isUnknownStationsSystem(system.id)
         && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
-        futureStationsSystems.add(StationsSystem.create(system));
+        futureStationsSystems.add(
+          StationsSystem.create(system, _systems.getSystemAvailabilityById(system.id))
+        );
       }
     }
 

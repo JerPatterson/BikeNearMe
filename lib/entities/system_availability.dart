@@ -60,7 +60,7 @@ class SystemAvailability {
         return {...availabilityByHour};
       });
     }
-    
+
     return {...availabilityByDay};
   }
 }

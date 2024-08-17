@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:bike_near_me/entities/system.dart';
+import 'package:bike_near_me/entities/system_availability.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -15,15 +16,17 @@ class StationsSystem {
     required this.stationInformationUrl,
     required this.color,
     required this.textColor,
+    required this.systemAvailability,
   }) {
     _initDataRefresh();
   }
 
-  static Future<StationsSystem> create(System system) async {
+  static Future<StationsSystem> create(System system, Future<SystemAvailability?> systemAvailability) async {
     var instance = StationsSystem._create(
       id: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
+      systemAvailability: await systemAvailability,
       color: system.color,
       textColor: system.textColor,
     );
@@ -38,6 +41,7 @@ class StationsSystem {
   final String id;
   final String stationStatusUrl;
   final String stationInformationUrl;
+  final SystemAvailability? systemAvailability;
   final Color color;
   final Color textColor;
 

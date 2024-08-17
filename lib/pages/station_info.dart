@@ -1,3 +1,4 @@
+import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
@@ -21,6 +22,7 @@ class StationInfoPage extends StatefulWidget {
     super.key,
     required this.stationInformation,
     required this.stationStatus,
+    required this.stationAvailability,
     required this.markerIcon,
     required this.textColor,
     required this.color,
@@ -29,6 +31,7 @@ class StationInfoPage extends StatefulWidget {
 
   final StationInformation stationInformation;
   final StationStatus stationStatus;
+  final Map<String, Map<String, Availability>>? stationAvailability;
   final IconData markerIcon;
   final Color textColor;
   final Color color;
