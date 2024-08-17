@@ -1,3 +1,4 @@
+import 'package:bike_near_me/entities/day.dart';
 import 'package:flutter/material.dart';
 
 class StationChart extends StatefulWidget {
@@ -15,6 +16,9 @@ class StationChart extends StatefulWidget {
 }
 
 class _StationChartState extends State<StationChart> {
+  DayOfWeek currentDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
+  final List<DayOfWeek> _daysOfWeek = [1, 2, 3, 4, 5, 6, 7].map((number) => DayOfWeek.create(number)).toList();
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -49,12 +53,11 @@ class _StationChartState extends State<StationChart> {
             ),
             Row(
               children: [
-                for (var dayAbbreviation in ["D", "L", "M", "M", "J", "V", "S"]) 
+                for (var dayOfWeek in _daysOfWeek) 
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 12, 8, 8),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -67,16 +70,19 @@ class _StationChartState extends State<StationChart> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          
+                          setState(() {
+                            currentDayOfWeek = dayOfWeek;
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(20),
+                          backgroundColor: currentDayOfWeek.name == dayOfWeek.name ? widget.color : widget.textColor,
                         ),
                         child: Text(
-                          dayAbbreviation,
+                          dayOfWeek.letterAbbreviation,
                           style: TextStyle(
-                            color: widget.color,
+                            color: currentDayOfWeek.name == dayOfWeek.name ? widget.textColor : widget.color,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
