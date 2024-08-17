@@ -49,11 +49,10 @@ class SystemAvailability {
         for (String hour in (sunday['"$id"'] as Map).keys) {
           availabilityByHour.putIfAbsent(hour.replaceAll('"', ''), () {
             try {
-              return Availability.fromJson(Map<String, dynamic>.from(sunday['"$id"'] as Map)[hour]);
+              return Availability.fromJson(Map<String, dynamic>.from(Map<String, dynamic>.from(sunday['"$id"'] as Map)[hour] as Map));
             } catch (_) {
               return Availability(bikesAvailable: 0, docksAvailable: 0, electricBikesFromAvailable: 0);
             }
-            
           });
         }
 

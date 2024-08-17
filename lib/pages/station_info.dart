@@ -129,7 +129,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       ),
                     ],
                   ),
-                  ElevatedButton.icon(
+                  if (widget.stationAvailability != null) ElevatedButton.icon(
                     icon: Icon(
                       Icons.bar_chart,
                       color: widget.textColor,
@@ -156,6 +156,8 @@ class _StationInfoPageState extends State<StationInfoPage> {
                           pageBuilder: (_, __, ___) => StationChart(
                             textColor: widget.textColor,
                             color: widget.color,
+                            stationCapacity: widget.stationInformation.capacity!,
+                            stationAvailability: widget.stationAvailability!,
                           ),
                         ),
                       );

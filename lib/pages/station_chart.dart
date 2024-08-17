@@ -1,3 +1,4 @@
+import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/day.dart';
 import 'package:flutter/material.dart';
 
@@ -6,18 +7,36 @@ class StationChart extends StatefulWidget {
     super.key,
     required this.textColor,
     required this.color,
+    required this.stationCapacity,
+    required this.stationAvailability,
   });
 
   final Color textColor;
   final Color color;
+  final int stationCapacity;
+  final Map<String, Map<String, Availability>> stationAvailability;
 
   @override
   State<StationChart> createState() => _StationChartState();
 }
 
 class _StationChartState extends State<StationChart> {
-  DayOfWeek currentDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
+  late List<Availability> _availabilities;
+  DayOfWeek _selectedDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
   final List<DayOfWeek> _daysOfWeek = [1, 2, 3, 4, 5, 6, 7].map((number) => DayOfWeek.create(number)).toList();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _availabilities = getStationAvailabilities();
+  }
+
+  List<Availability> getStationAvailabilities() {
+    return List.generate(24, (index) =>
+      widget.stationAvailability[_selectedDayOfWeek.name]?[index.toString()] ?? Availability(bikesAvailable: 0.0, docksAvailable: 0.0, electricBikesFromAvailable: 0.0)
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +62,7 @@ class _StationChartState extends State<StationChart> {
               ),
             ),
             Text(
-              "Habituellement rempli à 80%",
+              "Habituellement remplie à 80%",
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -55,7 +74,7 @@ class _StationChartState extends State<StationChart> {
               children: [
                 for (var dayOfWeek in _daysOfWeek) 
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 8, 8),
+                    padding: const EdgeInsets.fromLTRB(0, 12, 8, 16),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -71,18 +90,19 @@ class _StationChartState extends State<StationChart> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            currentDayOfWeek = dayOfWeek;
+                            _selectedDayOfWeek = dayOfWeek;
+                            _availabilities = getStationAvailabilities();
                           });
                         },
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(20),
-                          backgroundColor: currentDayOfWeek.name == dayOfWeek.name ? widget.color : widget.textColor,
+                          backgroundColor: _selectedDayOfWeek.name == dayOfWeek.name ? widget.color : widget.textColor,
                         ),
                         child: Text(
                           dayOfWeek.letterAbbreviation,
                           style: TextStyle(
-                            color: currentDayOfWeek.name == dayOfWeek.name ? widget.textColor : widget.color,
+                            color: _selectedDayOfWeek.name == dayOfWeek.name ? widget.textColor : widget.color,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -90,6 +110,35 @@ class _StationChartState extends State<StationChart> {
                       )
                     ),
                   ),
+              ],
+            ),
+            const Text(
+              "Pleine",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+              ),
+            ),
+            Row(
+              children: List.generate(500 ~/ 10, (index) => 
+                Expanded(
+                  child: Container(
+                    color: index % 2 == 0 ?Colors.grey : Colors.transparent,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var availability in _availabilities) Container(
+                  color: widget.color,
+                  width: (MediaQuery.of(context).size.width - 36) / 24.0,
+                  height: MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble(),
+                ),
               ],
             )
           ],
