@@ -2,6 +2,7 @@ import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
+import 'package:bike_near_me/pages/station_chart.dart';
 import 'package:bike_near_me/widgets/station_info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -149,7 +150,12 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       ),
                     ),
                     onPressed: () {
-                      
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (_, __, ___) => const StationChart(),
+                        ),
+                      );
                     },
                   ),
                 ],
