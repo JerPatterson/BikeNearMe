@@ -153,7 +153,10 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       Navigator.of(context).push(
                         PageRouteBuilder(
                           opaque: false,
-                          pageBuilder: (_, __, ___) => const StationChart(),
+                          pageBuilder: (_, __, ___) => StationChart(
+                            textColor: widget.textColor,
+                            color: widget.color,
+                          ),
                         ),
                       );
                     },
@@ -162,63 +165,63 @@ class _StationInfoPageState extends State<StationInfoPage> {
               ),
             ),
             Stack(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    margin: const EdgeInsets.only(top: 40),
-                    padding: const EdgeInsets.fromLTRB(16, 40, 8, 24),
-                    child: Column(
-                      children: [
-                        StationInfoTile(
-                          icon: BikeShare.bike,
-                          value: "${widget.stationStatus.numVehiclesAvailable}",
-                          valueName: "vélos",
-                          color: widget.color
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        StationInfoTile(
-                          icon: BikeShare.bike_electric,
-                          value: "${widget.hasOnlyElectricBikes ? widget.stationStatus.numVehiclesAvailable
-                            : widget.stationStatus.numElectricBikesAvailable}",
-                          valueName: "vélos électriques",
-                          color: widget.color
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        StationInfoTile(
-                          icon: BikeShare.bike_disabled,
-                          value: "${widget.stationStatus.numVehiclesDisabled}",
-                          valueName: "vélos désactivés",
-                          color: widget.color
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        StationInfoTile(
-                          icon: BikeShare.dock,
-                          value: "${widget.stationStatus.numDocksAvailable}",
-                          valueName: "places",
-                          color: widget.color
-                        ),
-                        const Divider(
-                          height: 1,
-                        ),
-                        StationInfoTile(
-                          icon: BikeShare.dock_disabled,
-                          value: "${widget.stationStatus.numDocksDisabled}",
-                          valueName: "places désactivés",
-                          color: widget.color
-                        ),
-                      ],
-                    ),
+              children: [
+                Container(
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(top: 40),
+                  padding: const EdgeInsets.fromLTRB(16, 40, 8, 24),
+                  child: Column(
+                    children: [
+                      StationInfoTile(
+                        icon: BikeShare.bike,
+                        value: "${widget.stationStatus.numVehiclesAvailable}",
+                        valueName: "vélos",
+                        color: widget.color
+                      ),
+                      const Divider(
+                        height: 1,
+                      ),
+                      StationInfoTile(
+                        icon: BikeShare.bike_electric,
+                        value: "${widget.hasOnlyElectricBikes ? widget.stationStatus.numVehiclesAvailable
+                          : widget.stationStatus.numElectricBikesAvailable}",
+                        valueName: "vélos électriques",
+                        color: widget.color
+                      ),
+                      const Divider(
+                        height: 1,
+                      ),
+                      StationInfoTile(
+                        icon: BikeShare.bike_disabled,
+                        value: "${widget.stationStatus.numVehiclesDisabled}",
+                        valueName: "vélos désactivés",
+                        color: widget.color
+                      ),
+                      const Divider(
+                        height: 1,
+                      ),
+                      StationInfoTile(
+                        icon: BikeShare.dock,
+                        value: "${widget.stationStatus.numDocksAvailable}",
+                        valueName: "places",
+                        color: widget.color
+                      ),
+                      const Divider(
+                        height: 1,
+                      ),
+                      StationInfoTile(
+                        icon: BikeShare.dock_disabled,
+                        value: "${widget.stationStatus.numDocksDisabled}",
+                        valueName: "places désactivés",
+                        color: widget.color
+                      ),
+                    ],
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: DecoratedBox(
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
