@@ -45,11 +45,12 @@ class SystemAvailability {
     Map<String, Map<String, Availability>> availabilityByDay = {};
     for (String day in daysOfTheWeek) {
       availabilityByDay.putIfAbsent(day, () {
-        Map<String, Availability> availabilityByHour = {};
-        for (String hour in (sunday['"$id"'] as Map).keys) {
+        Map<String, dynamic> dataOfDay = getDataFromDayOfWeek(day);
+        Map<String, Availability> availabilityByHour = {};        
+        for (String hour in (dataOfDay['"$id"'] as Map).keys) {
           availabilityByHour.putIfAbsent(hour.replaceAll('"', ''), () {
             try {
-              return Availability.fromJson(Map<String, dynamic>.from(Map<String, dynamic>.from(sunday['"$id"'] as Map)[hour] as Map));
+              return Availability.fromJson(Map<String, dynamic>.from(Map<String, dynamic>.from(dataOfDay['"$id"'] as Map)[hour] as Map));
             } catch (_) {
               return Availability(bikesAvailable: 0, docksAvailable: 0, electricBikesFromAvailable: 0);
             }
@@ -61,5 +62,26 @@ class SystemAvailability {
     }
 
     return {...availabilityByDay};
+  }
+
+  Map<String, dynamic> getDataFromDayOfWeek(String dayOfWeek) {
+    switch (dayOfWeek) {
+      case "monday":
+        return monday;
+      case "tuesday":
+        return tuesday;
+      case "wednesday":
+        return wednesday;
+      case "thursday":
+        return thursday;
+      case "friday":
+        return friday;
+      case "saturday":
+        return saturday;
+      case "sunday":
+        return sunday;
+    }
+
+    return sunday;
   }
 }

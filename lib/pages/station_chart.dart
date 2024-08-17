@@ -22,13 +22,14 @@ class StationChart extends StatefulWidget {
 
 class _StationChartState extends State<StationChart> {
   late List<Availability> _availabilities;
-  DayOfWeek _selectedDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
+  late DayOfWeek _selectedDayOfWeek;
   final List<DayOfWeek> _daysOfWeek = [1, 2, 3, 4, 5, 6, 7].map((number) => DayOfWeek.create(number)).toList();
 
 
   @override
   void initState() {
     super.initState();
+    _selectedDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
     _availabilities = getStationAvailabilities();
   }
 
@@ -134,9 +135,12 @@ class _StationChartState extends State<StationChart> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                ),
                 for (var availability in _availabilities) Container(
                   color: widget.color,
-                  width: (MediaQuery.of(context).size.width - 36) / 24.0,
+                  width: (MediaQuery.of(context).size.width - 36) / _availabilities.length.toDouble(),
                   height: MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble(),
                 ),
               ],
