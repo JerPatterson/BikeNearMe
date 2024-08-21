@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/day.dart';
 import 'package:flutter/material.dart';
@@ -135,12 +137,13 @@ class _StationChartState extends State<StationChart> {
               ],
             ),
             Text(
-              "Pleine (${widget.stationCapacity} vélos)",
+              "${widget.stationCapacity} vélos",
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
             ),
             Row(
@@ -169,10 +172,31 @@ class _StationChartState extends State<StationChart> {
                     color: widget.color,
                   ),
                   width: (MediaQuery.of(context).size.width - 36) / _availabilities.length.toDouble(),
-                  height: MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble(),
+                  height: min(
+                    MediaQuery.of(context).size.height * 0.3,
+                    MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble()
+                  ),
                 ),
               ],
-            )
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                for (var tick in ["0:00", "8:00", "16:00", ""]) Text(
+                  tick,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ],
         )
       ),
