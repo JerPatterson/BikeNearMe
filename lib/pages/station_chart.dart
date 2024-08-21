@@ -39,6 +39,13 @@ class _StationChartState extends State<StationChart> {
     );
   }
 
+  int getStationAverageAvailability() {
+    return 100 * List.generate(24, (index) => index)
+      .reduce((value, element) => 
+        value + (widget.stationAvailability[_selectedDayOfWeek.name]?[element.toString()]?.bikesAvailable.toInt() ?? 0)
+      ) ~/ (24 * widget.stationCapacity);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -54,20 +61,20 @@ class _StationChartState extends State<StationChart> {
           textBaseline: TextBaseline.ideographic,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Disponibilité par heures",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: widget.color,
+                color: Colors.black,
                 fontSize: 32,
               ),
             ),
             Text(
-              "Habituellement remplie à 80%",
+              "Habituellement remplie à ${getStationAverageAvailability()}%",
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: widget.color,
+              style: const TextStyle(
+                color: Colors.black,
                 fontSize: 32,
               ),
             ),
@@ -113,11 +120,11 @@ class _StationChartState extends State<StationChart> {
                   ),
               ],
             ),
-            const Text(
-              "Pleine",
+            Text(
+              "Pleine (${widget.stationCapacity} vélos)",
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 11,
               ),
