@@ -66,23 +66,37 @@ class _StationChartState extends State<StationChart> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 32,
+                fontSize: 28,
               ),
             ),
-            Text(
-              "Habituellement remplie à ${getStationAverageAvailability()}%",
-              textAlign: TextAlign.start,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 32,
-              ),
+            Row(
+              children: [
+                const Text(
+                  "Habituellement remplie à ",
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                  ),
+                ),
+                Text(
+                  "${getStationAverageAvailability()}%",
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
                 for (var dayOfWeek in _daysOfWeek) 
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 8, 16),
+                    padding: const EdgeInsets.fromLTRB(0, 18, 8, 16),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -146,7 +160,14 @@ class _StationChartState extends State<StationChart> {
                   height: MediaQuery.of(context).size.height * 0.3,
                 ),
                 for (var availability in _availabilities) Container(
-                  color: widget.color,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 3,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    color: widget.color,
+                  ),
                   width: (MediaQuery.of(context).size.width - 36) / _availabilities.length.toDouble(),
                   height: MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble(),
                 ),
