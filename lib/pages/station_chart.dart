@@ -68,7 +68,7 @@ class _StationChartState extends State<StationChart> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 28,
+                fontSize: 26,
               ),
             ),
             Row(
@@ -79,7 +79,7 @@ class _StationChartState extends State<StationChart> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 28,
+                    fontSize: 26,
                   ),
                 ),
                 Text(
@@ -88,7 +88,7 @@ class _StationChartState extends State<StationChart> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 28,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -120,14 +120,17 @@ class _StationChartState extends State<StationChart> {
                         },
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(
+                            MediaQuery.of(context).size.width * 0.25 / _daysOfWeek.length
+                          ),
                           backgroundColor: _selectedDayOfWeek.name == dayOfWeek.name ? widget.color : widget.textColor,
                         ),
                         child: Text(
                           dayOfWeek.letterAbbreviation,
                           style: TextStyle(
+                            height: 1.0,
                             color: _selectedDayOfWeek.name == dayOfWeek.name ? widget.textColor : widget.color,
-                            fontSize: 24,
+                            fontSize: MediaQuery.of(context).size.width * 0.4 / _daysOfWeek.length,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -171,10 +174,10 @@ class _StationChartState extends State<StationChart> {
                     borderRadius: BorderRadius.circular(20),
                     color: widget.color,
                   ),
-                  width: (MediaQuery.of(context).size.width - 36) / _availabilities.length.toDouble(),
+                  width: (MediaQuery.of(context).size.width - 36) / _availabilities.length,
                   height: min(
                     MediaQuery.of(context).size.height * 0.3,
-                    MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity.toDouble()
+                    MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity,
                   ),
                 ),
               ],
