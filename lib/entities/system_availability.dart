@@ -1,4 +1,5 @@
 import 'package:bike_near_me/entities/availibility.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 const daysOfTheWeek = [
   "sunday",
@@ -12,45 +13,32 @@ const daysOfTheWeek = [
 
 
 class SystemAvailability {
-  SystemAvailability({
-    required this.sunday,
-    required this.monday,
-    required this.tuesday,
-    required this.wednesday,
-    required this.thursday,
-    required this.friday,
-    required this.saturday,
+  SystemAvailability._create({
+    required this.systemId,
+    required this.database
   });
 
-  final Map<String, dynamic> sunday;
-  final Map<String, dynamic> monday;
-  final Map<String, dynamic> tuesday;
-  final Map<String, dynamic> wednesday;
-  final Map<String, dynamic> thursday;
-  final Map<String, dynamic> friday;
-  final Map<String, dynamic> saturday;
+  static SystemAvailability create(String systemId, FirebaseDatabase database) {
+    var instance = SystemAvailability._create(systemId: systemId, database: database);
 
-  factory SystemAvailability.fromJson(Map<String, dynamic> json) => SystemAvailability(
-    sunday: Map<String, dynamic>.from(json['"sunday"'] as Map),
-    monday: Map<String, dynamic>.from(json['"monday"'] as Map),
-    tuesday: Map<String, dynamic>.from(json['"tuesday"'] as Map),
-    wednesday: Map<String, dynamic>.from(json['"wednesday"'] as Map),
-    thursday: Map<String, dynamic>.from(json['"thursday"'] as Map),
-    friday: Map<String, dynamic>.from(json['"friday"'] as Map),
-    saturday: Map<String, dynamic>.from(json['"saturday"'] as Map),
-  );
+    return instance;
+  }
+
+  final String systemId;
+  final FirebaseDatabase database;
 
 
-  Map<String, Map<String, Availability>>? getStationAvailability(String id) {
+  Future<Map<String, Map<String, Availability>>?> getStationAvailability(String stationId) async {
     Map<String, Map<String, Availability>> availabilityByDay = {};
     for (String day in daysOfTheWeek) {
+      DataSnapshot snapshot = await database.ref("$systemId/$day/_$stationId").get();
       availabilityByDay.putIfAbsent(day, () {
-        Map<String, dynamic> dataOfDay = getDataFromDayOfWeek(day);
+        Map<String, dynamic> dataOfDay = Map<String, dynamic>.from(snapshot.value as Map);
         Map<String, Availability> availabilityByHour = {};        
-        for (String hour in (dataOfDay['"$id"'] as Map).keys) {
-          availabilityByHour.putIfAbsent(hour.replaceAll('"', ''), () {
+        for (String hour in (dataOfDay as Map).keys) {
+          availabilityByHour.putIfAbsent(hour, () {
             try {
-              return Availability.fromJson(Map<String, dynamic>.from(Map<String, dynamic>.from(dataOfDay['"$id"'] as Map)[hour] as Map));
+              return Availability.fromJson(Map<String, dynamic>.from(Map<String, dynamic>.from(dataOfDay as Map)[hour] as Map));
             } catch (_) {
               return Availability(bikesAvailable: 0, docksAvailable: 0, electricBikesFromAvailable: 0);
             }
@@ -62,26 +50,5 @@ class SystemAvailability {
     }
 
     return {...availabilityByDay};
-  }
-
-  Map<String, dynamic> getDataFromDayOfWeek(String dayOfWeek) {
-    switch (dayOfWeek) {
-      case "monday":
-        return monday;
-      case "tuesday":
-        return tuesday;
-      case "wednesday":
-        return wednesday;
-      case "thursday":
-        return thursday;
-      case "friday":
-        return friday;
-      case "saturday":
-        return saturday;
-      case "sunday":
-        return sunday;
-    }
-
-    return sunday;
   }
 }

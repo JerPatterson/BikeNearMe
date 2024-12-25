@@ -37,14 +37,14 @@ class _StationChartState extends State<StationChart> {
 
   List<Availability> getStationAvailabilities() {
     return List.generate(24, (index) =>
-      widget.stationAvailability[_selectedDayOfWeek.name]?[index.toString()] ?? Availability(bikesAvailable: 0.0, docksAvailable: 0.0, electricBikesFromAvailable: 0.0)
+      widget.stationAvailability[_selectedDayOfWeek.name]?["_${index.toString()}"] ?? Availability(bikesAvailable: 0.0, docksAvailable: 0.0, electricBikesFromAvailable: 0.0)
     );
   }
 
   int getStationAverageAvailability() {
     return 100 * List.generate(24, (index) => index)
       .reduce((value, element) => 
-        value + (widget.stationAvailability[_selectedDayOfWeek.name]?[element.toString()]?.bikesAvailable.toInt() ?? 0)
+        value + (widget.stationAvailability[_selectedDayOfWeek.name]?["_${element.toString()}"]?.bikesAvailable.toInt() ?? 0)
       ) ~/ (24 * widget.stationCapacity);
   }
 

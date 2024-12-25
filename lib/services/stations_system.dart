@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:bike_near_me/entities/system.dart';
@@ -21,12 +22,12 @@ class StationsSystem {
     _initDataRefresh();
   }
 
-  static Future<StationsSystem> create(System system, Future<SystemAvailability?> systemAvailability) async {
+  static Future<StationsSystem> create(System system, SystemAvailability? systemAvailability) async {
     var instance = StationsSystem._create(
       id: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
-      systemAvailability: await systemAvailability,
+      systemAvailability: systemAvailability,
       color: system.color,
       textColor: system.textColor,
     );
@@ -72,6 +73,10 @@ class StationsSystem {
 
   StationInformation? getStationInformationById(String stationId) {
     return stationsInformationByStationIds[stationId];
+  }
+
+  Future<Map<String, Map<String, Availability>>?> getStationAvailabilityHistory(String stationId) async {
+    return systemAvailability?.getStationAvailability(stationId);
   }
 
 

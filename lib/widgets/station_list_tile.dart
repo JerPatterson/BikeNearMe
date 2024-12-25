@@ -1,3 +1,4 @@
+import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/pages/station_info.dart';
 import 'package:bike_near_me/services/stations_system.dart';
@@ -30,14 +31,16 @@ class StationListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        Map<String, Map<String, Availability>>? availabilityHistory = await stationsSystem.getStationAvailabilityHistory(stationInformation.id);
+        if (!context.mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => StationInfoPage(
               stationInformation: stationInformation,
               stationStatus: stationsSystem.getStationStatusById(stationInformation.id)!,
-              stationAvailability: stationsSystem.systemAvailability?.getStationAvailability(stationInformation.id),
+              stationAvailability: availabilityHistory,
               markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, false),
               textColor: stationsSystem.textColor,
               color: stationsSystem.color,

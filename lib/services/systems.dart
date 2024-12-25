@@ -12,7 +12,12 @@ class Systems {
     var snapshot = await database.ref('systems').get();
     for (var system in instance._systemsFromJson(snapshot.value)) {
       instance.systems.add(system);
-      instance._systemById.putIfAbsent(system.id, () => system);
+      instance._systemById.putIfAbsent(
+        system.id, () => system
+      );
+      instance._systemAvailabilityById.putIfAbsent(
+        system.id, () => SystemAvailability.create(system.id, database)
+      );
     }
 
     return instance;
@@ -28,18 +33,8 @@ class Systems {
     return _systemById[id];
   }
 
-  Future<SystemAvailability?> getSystemAvailabilityById(String id) async {
-    try {
-      DataSnapshot? snapshot;
-      if (!_systemAvailabilityById.containsKey(id)) {
-        snapshot = await database.ref(id).get();
-      }
-      return _systemAvailabilityById.putIfAbsent(id, () {
-        return SystemAvailability.fromJson(Map<String, dynamic>.from(snapshot!.value as Map));
-      });
-    } catch (_) {
-      return null;
-    }
+  SystemAvailability? getSystemAvailabilityById(String id) {
+    return _systemAvailabilityById[id];
   }
 
   List<System> _systemsFromJson(list) => List<System>.from(
