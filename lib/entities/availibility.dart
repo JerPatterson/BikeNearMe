@@ -10,8 +10,8 @@ class Availability {
   final double electricBikesFromAvailable;
 
   factory Availability.fromJson(Map<String, dynamic> json) => Availability(
-    bikesAvailable: json['bikes_available'],
-    docksAvailable: json['docks_available'],
-    electricBikesFromAvailable: json['electric_bikes_from_available'],
+    bikesAvailable: double.parse(json['bikes_available'].toString()),
+    docksAvailable: double.parse(json['docks_available'].toString()),
+    electricBikesFromAvailable: double.parse(json['electric_bikes_from_available'].toString()),
   );
 }
