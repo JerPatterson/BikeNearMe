@@ -89,7 +89,16 @@ class _StationsMapPageState extends State<StationsMapPage> {
   void initMapRefresh() {
     Systems.create(FirebaseDatabase.instance).then((systems) {
       _systems = systems;
-      updateKnownPositions(const MapPosition(center: initialCenter), false);
+      updateKnownPositions(
+        MapCamera(
+          crs: Epsg3857(),
+          center: initialCenter,
+          zoom: initialZoom,
+          rotation: 0.0,
+          nonRotatedSize: Point(0.0, 0.0)
+        ), 
+        false
+      );
       Timer.periodic(const Duration(seconds: markerUpdatesIntervallSeconds), (_) {
         updateMarkers();
       });
@@ -98,10 +107,10 @@ class _StationsMapPageState extends State<StationsMapPage> {
   }
 
 
-  void updateKnownPositions(MapPosition position, bool _) {
+  void updateKnownPositions(MapCamera position, bool _) {
     setState(() {
-      _latitude = position.center!.latitude;
-      _longitude = position.center!.longitude;
+      _latitude = position.center.latitude;
+      _longitude = position.center.longitude;
     });
 
     _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
