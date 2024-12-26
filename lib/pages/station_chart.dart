@@ -95,46 +95,38 @@ class _StationChartState extends State<StationChart> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                for (var dayOfWeek in _daysOfWeek) 
+                for (DayOfWeek dayOfWeek in _daysOfWeek) 
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 18, 8, 16),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(alpha: 0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                    padding: const EdgeInsets.fromLTRB(0, 18, 0, 16),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedDayOfWeek = dayOfWeek;
+                          _availabilities = getStationAvailabilities();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: EdgeInsets.zero,
+                        fixedSize: Size.square(
+                          (MediaQuery.of(context).size.width - (_daysOfWeek.length * 5) - 36) / _daysOfWeek.length,
+                        ),
+                        shape: const CircleBorder(),
+                        backgroundColor: _selectedDayOfWeek.name == dayOfWeek.name ?
+                          widget.color : widget.textColor,
                       ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedDayOfWeek = dayOfWeek;
-                            _availabilities = getStationAvailabilities();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: EdgeInsets.all(
-                            MediaQuery.of(context).size.width * 0.25 / _daysOfWeek.length
-                          ),
-                          backgroundColor: _selectedDayOfWeek.name == dayOfWeek.name ? widget.color : widget.textColor,
+                      child: Text(
+                        dayOfWeek.letterAbbreviation,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _selectedDayOfWeek.name == dayOfWeek.name ? 
+                            widget.textColor : widget.color,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Text(
-                          dayOfWeek.letterAbbreviation,
-                          style: TextStyle(
-                            height: 1.0,
-                            color: _selectedDayOfWeek.name == dayOfWeek.name ? widget.textColor : widget.color,
-                            fontSize: MediaQuery.of(context).size.width * 0.4 / _daysOfWeek.length,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
+                      ),
                     ),
                   ),
               ],
@@ -165,11 +157,11 @@ class _StationChartState extends State<StationChart> {
                 Container(
                   height: MediaQuery.of(context).size.height * 0.3,
                 ),
-                for (var availability in _availabilities) Container(
+                for (Availability availability in _availabilities) Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.white,
-                      width: 3,
+                      width: 1,
                     ),
                     borderRadius: BorderRadius.circular(20),
                     color: widget.color,
