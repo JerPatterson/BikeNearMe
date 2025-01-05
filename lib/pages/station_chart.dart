@@ -53,22 +53,33 @@ class _StationChartState extends State<StationChart> {
     return Material(
       color: Colors.transparent,
       child: Container(
-        color: Colors.white,
         margin: EdgeInsets.only(
           top: MediaQuery.of(context).size.height * 0.4,
         ),
         padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          )
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.ideographic,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Icon(
+              Icons.bar_chart,
+              color: widget.color,
+              size: 36,
+            ),
             const Text(
               "Disponibilité par heures",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 26,
+                fontSize: 22,
               ),
             ),
             Row(
@@ -79,7 +90,7 @@ class _StationChartState extends State<StationChart> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 26,
+                    fontSize: 22,
                   ),
                 ),
                 Text(
@@ -88,7 +99,7 @@ class _StationChartState extends State<StationChart> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 26,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

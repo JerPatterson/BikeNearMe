@@ -329,7 +329,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
               updateMarkers();
             case "docks":
               _typeNotDisplayed = "bikes";
-              _switchMarkerTypeIcon = Icons.pedal_bike;
+              _switchMarkerTypeIcon = BikeShare.bike;
               updateMarkers();
               break;
           }
@@ -339,7 +339,17 @@ class _StationsMapPageState extends State<StationsMapPage> {
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
         splashColor: Colors.grey,
-        child: Icon(_switchMarkerTypeIcon),
+        mini: true,
+        child: Text(
+          String.fromCharCode(
+            _switchMarkerTypeIcon.codePoint,
+          ),
+          style: TextStyle(
+            fontSize: 20.0,
+            fontFamily: _switchMarkerTypeIcon.fontFamily,
+            package: _switchMarkerTypeIcon.fontPackage,
+          )
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );

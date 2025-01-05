@@ -157,7 +157,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                         backgroundColor: widget.color,
                         shadowColor: widget.color,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(12.0),
                         ),
                       ),
                       onPressed: () {
@@ -240,7 +240,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withValues(alpha: 0.5),
