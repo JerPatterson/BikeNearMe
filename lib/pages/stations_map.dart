@@ -335,10 +335,13 @@ class _StationsMapPageState extends State<StationsMapPage> {
           }
         },
         tooltip: 'Display $_typeNotDisplayed instead',
-        mini: true,
+        shape: const CircleBorder(),
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
+        splashColor: Colors.grey,
         child: Icon(_switchMarkerTypeIcon),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
