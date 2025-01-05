@@ -14,11 +14,12 @@ Future<void> main() async {
 void makeNavigationBarTransparent() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      systemStatusBarContrastEnforced: true,
+      systemNavigationBarContrastEnforced: false,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark
+      statusBarColor: Colors.transparent, 
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
     )
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top]);
@@ -33,7 +34,6 @@ class MyApp extends StatelessWidget {
       title: 'BikeNearMe',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF17273E)),
         useMaterial3: true,
       ),
       home: const StationsMapPage(),
