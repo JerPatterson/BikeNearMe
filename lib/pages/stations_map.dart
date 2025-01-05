@@ -13,6 +13,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const minZoom = 10.0;
 const maxZoom = 20.0;
@@ -278,36 +279,42 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 MarkerLayer(
                   markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
                 ),
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      'OpenStreetMap contributors',
-                      onTap: () => {},
-                    ),
-                  ],
-                ),
               ],
             ),
           ]
         ),
         panelBuilder: (ScrollController sc) {
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              color: _numberOfStations == 0 ? 
-                Colors.transparent : _stationsSystems.last.color,
-            ),
-            child: StationList(
-              controller: sc,
-              updateNbOfStations: updateNbOfStations,
-              latitude: _latitude,
-              longitude: _longitude,
-              stationsSystems: _stationsSystems,
-              showDockAvailability: _typeNotDisplayed == "bikes",
+          return SingleChildScrollView(
+            controller: sc,
+            child: Column(
+              children: [
+                RichAttributionWidget(
+                  attributions: [
+                    TextSourceAttribution(
+                      'OpenStreetMap contributors',
+                      onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
+                    ),
+                  ],
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: _numberOfStations == 0 ? 
+                        Colors.transparent : _stationsSystems.last.color,
+                    ),
+                  child: StationList(
+                      updateNbOfStations: updateNbOfStations,
+                      latitude: _latitude,
+                      longitude: _longitude,
+                      stationsSystems: _stationsSystems,
+                      showDockAvailability: _typeNotDisplayed == "bikes",
+                    ),
+                ),
+              ],
             ),
           );
         },
-        maxHeight: min(_numberOfStations * 90.8 + 24, MediaQuery.of(context).size.height),
-        minHeight: min(_numberOfStations * 90.8 + 24, MediaQuery.of(context).size.height * 0.35),
+        maxHeight: min(_numberOfStations * 90.8 + 124, MediaQuery.of(context).size.height),
+        minHeight: min(_numberOfStations * 90.8 + 124, MediaQuery.of(context).size.height * 0.35),
         renderPanelSheet: false,
         panelSnapping: false,
         parallaxEnabled: true,

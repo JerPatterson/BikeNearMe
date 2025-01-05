@@ -10,7 +10,6 @@ typedef UpdateNbOfStationsFunction = void Function(int nbOfStations);
 class StationList extends StatelessWidget {
   StationList({
     super.key,
-    required this.controller,
     required this.updateNbOfStations,
     required this.latitude,
     required this.longitude,
@@ -39,7 +38,6 @@ class StationList extends StatelessWidget {
     
   }
 
-  final ScrollController controller;
   final UpdateNbOfStationsFunction updateNbOfStations;
 
   final double latitude;
@@ -73,7 +71,6 @@ class StationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      controller: controller,
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
