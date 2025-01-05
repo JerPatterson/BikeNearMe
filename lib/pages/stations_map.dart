@@ -238,6 +238,9 @@ class _StationsMapPageState extends State<StationsMapPage> {
                   userAgentPackageName: 'com.example.app',
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
+                MarkerLayer(
+                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+                ),
                 const Align(
                   alignment: Alignment.center,
                   child: Icon(
@@ -275,9 +278,6 @@ class _StationsMapPageState extends State<StationsMapPage> {
                       ),
                     ),
                   ],
-                ),
-                MarkerLayer(
-                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
                 ),
               ],
             ),
