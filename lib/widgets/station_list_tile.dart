@@ -41,10 +41,11 @@ class StationListTile extends StatelessWidget {
               stationInformation: stationInformation,
               stationStatus: stationsSystem.getStationStatusById(stationInformation.id)!,
               stationAvailability: availabilityHistory,
-              markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, false),
+              markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
               textColor: stationsSystem.textColor,
               color: stationsSystem.color,
               hasOnlyElectricBikes: stationsSystem.id != "Bixi_MTL",
+              showDockAvailability: showDockAvailability,
             ),
           ),
         );

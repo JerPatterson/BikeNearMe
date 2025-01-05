@@ -28,6 +28,7 @@ class StationInfoPage extends StatefulWidget {
     required this.textColor,
     required this.color,
     required this.hasOnlyElectricBikes,
+    required this.showDockAvailability,
   });
 
   final StationInformation stationInformation;
@@ -37,6 +38,7 @@ class StationInfoPage extends StatefulWidget {
   final Color textColor;
   final Color color;
   final bool hasOnlyElectricBikes;
+  final bool showDockAvailability;
 
   @override
   State<StationInfoPage> createState() => _StationInfoPageState();
@@ -106,7 +108,9 @@ class _StationInfoPageState extends State<StationInfoPage> {
                     textBaseline: TextBaseline.ideographic,
                     children: [
                       Text(
-                        "${widget.stationStatus.numVehiclesAvailable}",
+                        "${widget.showDockAvailability ? 
+                          widget.stationStatus.numDocksAvailable :
+                          widget.stationStatus.numVehiclesAvailable}",
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: widget.color,
@@ -171,6 +175,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                               color: widget.color,
                               stationCapacity: widget.stationInformation.capacity!,
                               stationAvailability: widget.stationAvailability!,
+                              showDockAvailability: widget.showDockAvailability,
                             ),
                           ),
                         );

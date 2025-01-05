@@ -11,12 +11,14 @@ class StationChart extends StatefulWidget {
     required this.color,
     required this.stationCapacity,
     required this.stationAvailability,
+    required this.showDockAvailability,
   });
 
   final Color textColor;
   final Color color;
   final int stationCapacity;
   final Map<String, Map<String, Availability>> stationAvailability;
+  final bool showDockAvailability;
 
   @override
   State<StationChart> createState() => _StationChartState();
@@ -84,8 +86,10 @@ class _StationChartState extends State<StationChart> {
             ),
             Row(
               children: [
-                const Text(
-                  "Habituellement remplie à ",
+                Text(
+                  widget.showDockAvailability ?
+                    "Habituellement libre à " :
+                    "Habituellement remplie à ",
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -94,7 +98,9 @@ class _StationChartState extends State<StationChart> {
                   ),
                 ),
                 Text(
-                  "${getStationAverageAvailability()}%",
+                  "${widget.showDockAvailability ?
+                    100 - getStationAverageAvailability() :
+                    getStationAverageAvailability()}%",
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -180,7 +186,9 @@ class _StationChartState extends State<StationChart> {
                   width: (MediaQuery.of(context).size.width - 36) / _availabilities.length,
                   height: min(
                     MediaQuery.of(context).size.height * 0.3,
-                    MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity,
+                    widget.showDockAvailability ?
+                      MediaQuery.of(context).size.height * 0.3 * availability.docksAvailable / widget.stationCapacity :
+                      MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity,
                   ),
                 ),
               ],
