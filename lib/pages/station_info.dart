@@ -45,11 +45,15 @@ class StationInfoPage extends StatefulWidget {
 class _StationInfoPageState extends State<StationInfoPage> {
   @override
   Widget build(BuildContext context) {
+    final mapController = MapController();
+    final panelController = PanelController();
     final stationPosition = LatLng(widget.stationInformation.lat, widget.stationInformation.lon);
   
     return Scaffold(
       body: SlidingUpPanel(
+        controller: panelController,
         body: FlutterMap(
+          mapController: mapController,
           options: MapOptions(
             initialCenter: stationPosition,
             initialZoom: initialZoom,
@@ -83,14 +87,6 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            RichAttributionWidget(
-              attributions: [
-                TextSourceAttribution(
-                  'OpenStreetMap contributors',
-                  onTap: () => {},
                 ),
               ],
             ),
@@ -129,39 +125,57 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       ),
                     ],
                   ),
-                  if (widget.stationAvailability != null) ElevatedButton.icon(
-                    icon: Icon(
-                      Icons.bar_chart,
-                      color: widget.textColor,
-                      size: 20,
+                  if (widget.stationAvailability != null) Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12.0),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: widget.color.withAlpha(80),
+                          blurRadius: 6,
+                          spreadRadius: 3,
+                        )
+                      ]
                     ),
-                    label: Text(
-                      "Disponibilité",
-                      style: TextStyle(
+                    child: ElevatedButton.icon(
+                      icon: Icon(
+                        Icons.bar_chart,
                         color: widget.textColor,
-                        fontSize: 20,
+                        size: 20,
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(12),
-                      backgroundColor: widget.color,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          opaque: false,
-                          pageBuilder: (_, __, ___) => StationChart(
-                            textColor: widget.textColor,
-                            color: widget.color,
-                            stationCapacity: widget.stationInformation.capacity!,
-                            stationAvailability: widget.stationAvailability!,
-                          ),
+                      label: Text(
+                        "Disponibilité",
+                        style: TextStyle(
+                          color: widget.textColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(12.0),
+                        backgroundColor: widget.color,
+                        shadowColor: widget.color,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        mapController.move(stationPosition, initialZoom);
+                        panelController.open();
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (_, __, ___) => StationChart(
+                              textColor: widget.textColor,
+                              color: widget.color,
+                              stationCapacity: widget.stationInformation.capacity!,
+                              stationAvailability: widget.stationAvailability!,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -226,7 +240,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withValues(alpha: 0.5),
