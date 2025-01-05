@@ -1,16 +1,23 @@
 # BikeNearMe
 
-A new Flutter project.
+A cross platform application to monitor the availability of station-based mobility systems.
 
-## Getting Started
+## Project state
 
-This project is a starting point for a Flutter application.
+Text to add here
 
-A few resources to get you started if this is your first Flutter project:
+## User interface
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Text to add here
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How to use
+
+Text to add here
+
+## Upcoming improvements
+
+Text to add here
+
+## Useful links
+
+Text to add here
