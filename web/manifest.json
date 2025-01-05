@@ -1,11 +1,11 @@
 {
-    "name": "bike_near_me",
-    "short_name": "bike_near_me",
+    "name": "BikeNearMe",
+    "short_name": "BikeNearMe",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A cross platform application to monitor the availability of station-based mobility systems.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
