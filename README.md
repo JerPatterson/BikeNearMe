@@ -24,13 +24,13 @@ The application is using a layout similar to the one of [Transit](https://transi
 <table>
   <tr>
     <td>Surrounding map with stations view</td>
-    <td>Station information view</td>
+    <td>Selected station information view</td>
     <td>Station availability history view</td>
   </tr>
   <tr>
-    <td><img src="" width=270></td>
-    <td><img src="" width=270></td>
-    <td><img src="" width=270></td>
+    <td><img src="https://github.com/user-attachments/assets/bc0d4084-1b96-43dc-bd2c-c841559a3966" width=270></td>
+    <td><img src="https://github.com/user-attachments/assets/47a0f6b6-3d83-4eef-ada3-092fc1ec0c27" width=270></td>
+    <td><img src="https://github.com/user-attachments/assets/11bf40c2-cf43-40a8-92e5-9c6b2c3c9675" width=270></td>
   </tr>
 </table>
 
