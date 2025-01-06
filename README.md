@@ -42,6 +42,7 @@ Ensure you have an internet connection, as the application directly calls the sy
 
 - Making it possible to add systems dynamically in the database (if using the [GBFS](https://gbfs.org/) standard)
 - Adding a price calculator by the time length that adapt for each systems
+- Making it work on screen where the width is bigger than the height
 - Adding non-bike station-based systems support
 - Making it possible to display systems that are not station based
 
