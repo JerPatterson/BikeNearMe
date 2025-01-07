@@ -217,12 +217,13 @@ class StationsSystem {
       _stationsStatus = await _getStationsStatus();
       for (var stationStatus in _stationsStatus) {
         if (propulsionByVehicleTypeId.isNotEmpty) {
-            for (var vehicleTypeAvailable in stationStatus.vehicleTypesAvailable) {
-              if (propulsionByVehicleTypeId.containsKey(vehicleTypeAvailable.id)) {
-                if (propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric"
-                  || propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric_assist") {
-                  stationStatus.numElectricVehiclesAvailable += vehicleTypeAvailable.count;
-                }
+          stationStatus.numElectricVehiclesAvailable = 0;
+          for (var vehicleTypeAvailable in stationStatus.vehicleTypesAvailable) {
+            if (propulsionByVehicleTypeId.containsKey(vehicleTypeAvailable.id)) {
+              if (propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric"
+                || propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric_assist") {
+                stationStatus.numElectricVehiclesAvailable += vehicleTypeAvailable.count;
+              }
             }
           }
         }
