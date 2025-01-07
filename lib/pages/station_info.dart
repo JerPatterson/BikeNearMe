@@ -194,7 +194,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.bike,
                         value: "${widget.stationStatus.numVehiclesAvailable}",
-                        valueName: "vélos",
+                        valueName: widget.stationStatus.numVehiclesAvailable > 1 ? "vélos" : "vélo",
                         color: widget.color
                       ),
                       const Divider(
@@ -203,7 +203,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.bike_electric,
                         value: "${widget.stationStatus.numElectricVehiclesAvailable}",
-                        valueName: "vélos électriques",
+                        valueName: widget.stationStatus.numElectricVehiclesAvailable > 1 ? "vélos électriques" : "vélo électrique",
                         color: widget.color
                       ),
                       const Divider(
@@ -212,7 +212,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.bike_disabled,
                         value: "${widget.stationStatus.numVehiclesDisabled}",
-                        valueName: "vélos désactivés",
+                        valueName: widget.stationStatus.numDocksDisabled > 1 ? "vélos désactivés" : "vélo désactivé",
                         color: widget.color
                       ),
                       const Divider(
@@ -221,7 +221,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.dock,
                         value: "${widget.stationStatus.numDocksAvailable}",
-                        valueName: "places",
+                        valueName: widget.stationStatus.numDocksAvailable! > 1 ? "places" : "place",
                         color: widget.color
                       ),
                       const Divider(
@@ -230,7 +230,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.dock_disabled,
                         value: "${widget.stationStatus.numDocksDisabled}",
-                        valueName: "places désactivées",
+                        valueName: widget.stationStatus.numDocksDisabled > 1 ? "places désactivées" : "place désactivée",
                         color: widget.color
                       ),
                     ],
