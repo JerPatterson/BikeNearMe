@@ -23,14 +23,14 @@ class System {
   final String vehicleTypesUrl;
 
   factory System.fromJson(Map<String, dynamic> json) => System(
-    id: json['id'],
+    id: json['id'].toString(),
     minPosition: LatLng(json['min_lat'], json['min_lon']),
     maxPosition: LatLng(json['max_lat'], json['max_lon']),
     color: Color(int.parse(json['color'])),
     textColor: Color(int.parse(json['text_color'])),
-    stationStatusUrl: json['station_status_url'],
-    stationInformationUrl: json['station_information_url'],
-    vehicleTypesUrl: json['vehicle_types_url'],
+    stationStatusUrl: json['station_status_url'].toString(),
+    stationInformationUrl: json['station_information_url'].toString(),
+    vehicleTypesUrl: json['vehicle_types_url'].toString(),
   );
 
 

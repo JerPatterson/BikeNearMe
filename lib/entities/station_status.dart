@@ -28,7 +28,7 @@ class StationStatus {
   int? lastReported;
 
   factory StationStatus.fromJson(Map<String, dynamic> json) => StationStatus(
-    id: json['station_id'],
+    id: json['station_id'].toString(),
     numVehiclesAvailable: json['num_bikes_available'],
     numElectricVehiclesAvailable: json['num_ebikes_available'] ?? 0,
     numVehiclesDisabled: json['num_bikes_disabled'] ?? 0,

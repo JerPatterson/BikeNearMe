@@ -22,7 +22,7 @@ class StationInformation {
   final bool? isChargingStation;
 
   factory StationInformation.fromJson(Map<String, dynamic> json) => StationInformation(
-    id: json['station_id'],
+    id: json['station_id'].toString(),
     name: const Utf8Decoder(allowMalformed: true).convert(json['name']!.toString().codeUnits),
     shortName: const Utf8Decoder(allowMalformed: true).convert(json['short_name'].toString().codeUnits),
     lat: json['lat'],

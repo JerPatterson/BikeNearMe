@@ -18,7 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 const minZoom = 10.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
-const initialCenter = LatLng(45.504789, -73.613187);
+const initialCenter = LatLng(49.302, -123.0569);
 
 const markerUpdatesIntervallSeconds = 30;
 const stationMarkerIconSize = 35.0;

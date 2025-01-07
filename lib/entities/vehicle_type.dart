@@ -10,8 +10,8 @@ class VehicleType {
   String propulsionType;
 
   factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
-    id: json['vehicle_type_id'],
-    formFactor: json['form_factor'],
-    propulsionType: json['propulsion_type'],
+    id: json['vehicle_type_id'].toString(),
+    formFactor: json['form_factor'].toString(),
+    propulsionType: json['propulsion_type'].toString(),
   );
 }

@@ -8,7 +8,7 @@ class VehicleTypeAvailability {
   int count;
 
   factory VehicleTypeAvailability.fromJson(Map<String, dynamic> json) => VehicleTypeAvailability(
-    id: json['vehicle_type_id'],
+    id: json['vehicle_type_id'].toString(),
     count: json['count'],
   );
 }
