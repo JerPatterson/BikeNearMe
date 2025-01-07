@@ -4,7 +4,7 @@ import 'package:bike_near_me/services/stations_system.dart';
 import 'package:bike_near_me/widgets/station_list_tile.dart';
 import 'package:flutter/material.dart';
 
-typedef UpdateNbOfStationsFunction = void Function(int nbOfStations);
+typedef UpdateNbOfStationsFunction = void Function(int nbOfStations, Color lastColor);
 
 
 class StationList extends StatelessWidget {
@@ -33,7 +33,7 @@ class StationList extends StatelessWidget {
 
     _stationListTiles.sort((a, b) => a.distance.compareTo(b.distance));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      updateNbOfStations(_stationListTiles.length);
+      updateNbOfStations(_stationListTiles.length, _stationListTiles.last.stationsSystem.color);
     });
     
   }

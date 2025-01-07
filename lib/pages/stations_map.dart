@@ -18,7 +18,7 @@ import 'package:url_launcher/url_launcher.dart';
 const minZoom = 10.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
-const initialCenter = LatLng(49.302, -123.0569);
+const initialCenter = LatLng(45.504789, -73.613187);
 
 const markerUpdatesIntervallSeconds = 30;
 const stationMarkerIconSize = 35.0;
@@ -51,6 +51,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
   String _typeNotDisplayed = "docks";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
+  Color _navigationBarColor = Colors.transparent;
 
   final MapController _mapController = MapController();
 
@@ -206,9 +207,10 @@ class _StationsMapPageState extends State<StationsMapPage> {
     );
   }
 
-  void updateNbOfStations(int numberOfStations) {
+  void updateNbOfStations(int numberOfStations, Color lastColor) {
     setState(() {
       _numberOfStations = numberOfStations;
+      _navigationBarColor = lastColor;
     });
   }
 
@@ -299,7 +301,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 DecoratedBox(
                   decoration: BoxDecoration(
                       color: _numberOfStations == 0 ? 
-                        Colors.transparent : _stationsSystems.last.color,
+                        Colors.transparent : _navigationBarColor,
                     ),
                   child: StationList(
                       updateNbOfStations: updateNbOfStations,
