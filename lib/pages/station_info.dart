@@ -27,7 +27,6 @@ class StationInfoPage extends StatefulWidget {
     required this.markerIcon,
     required this.textColor,
     required this.color,
-    required this.hasOnlyElectricBikes,
     required this.showDockAvailability,
   });
 
@@ -37,7 +36,6 @@ class StationInfoPage extends StatefulWidget {
   final IconData markerIcon;
   final Color textColor;
   final Color color;
-  final bool hasOnlyElectricBikes;
   final bool showDockAvailability;
 
   @override
@@ -204,8 +202,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       ),
                       StationInfoTile(
                         icon: BikeShare.bike_electric,
-                        value: "${widget.hasOnlyElectricBikes ? widget.stationStatus.numVehiclesAvailable
-                          : widget.stationStatus.numElectricBikesAvailable}",
+                        value: "${widget.stationStatus.numElectricVehiclesAvailable}",
                         valueName: "vélos électriques",
                         color: widget.color
                       ),
@@ -233,7 +230,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.dock_disabled,
                         value: "${widget.stationStatus.numDocksDisabled}",
-                        valueName: "places désactivés",
+                        valueName: "places désactivées",
                         color: widget.color
                       ),
                     ],

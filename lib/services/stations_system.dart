@@ -5,6 +5,7 @@ import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/station_status.dart';
 import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/entities/system_availability.dart';
+import 'package:bike_near_me/entities/vehicle_type.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +16,7 @@ class StationsSystem {
     required this.id,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
+    required this.vehicleTypesUrl,
     required this.color,
     required this.textColor,
     required this.systemAvailability,
@@ -27,11 +29,13 @@ class StationsSystem {
       id: system.id,
       stationStatusUrl: system.stationStatusUrl,
       stationInformationUrl: system.stationInformationUrl,
+      vehicleTypesUrl: system.vehicleTypesUrl,
       systemAvailability: systemAvailability,
       color: system.color,
       textColor: system.textColor,
     );
     
+    await instance._setVehicleTypes();
     await instance._setStationsInformation();
     await instance._setStationsStatus();
 
@@ -42,14 +46,17 @@ class StationsSystem {
   final String id;
   final String stationStatusUrl;
   final String stationInformationUrl;
+  final String vehicleTypesUrl;
   final SystemAvailability? systemAvailability;
   final Color color;
   final Color textColor;
 
+  List<VehicleType> _vehicleTypes = [];
   List<StationStatus> _stationsStatus = [];
   List<StationInformation> _stationsInformation = [];
   final Map<String, StationStatus> stationsStatusByStationIds = {};
   final Map<String, StationInformation> stationsInformationByStationIds = {};
+  final Map<String, String> propulsionByVehicleTypeId = {};
 
 
   void _initDataRefresh() {
@@ -190,9 +197,35 @@ class StationsSystem {
   }
 
 
+  Future<void> _setVehicleTypes() async {
+    try {
+      _vehicleTypes = await _getVehicleTypes();
+      for (var vehicleType in _vehicleTypes) {
+        propulsionByVehicleTypeId.update(
+          vehicleType.id,
+          (value) => vehicleType.propulsionType,
+          ifAbsent: () => vehicleType.propulsionType,
+        );
+      }
+    } catch (_) {
+      return;
+    }
+  }
+
   Future<void> _setStationsStatus() async {
     _stationsStatus = await _getStationsStatus();
     for (var stationStatus in _stationsStatus) {
+      if (propulsionByVehicleTypeId.isNotEmpty) {
+          for (var vehicleTypeAvailable in stationStatus.vehicleTypesAvailable) {
+            if (propulsionByVehicleTypeId.containsKey(vehicleTypeAvailable.id)) {
+              if (propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric"
+                || propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric_assist") {
+                stationStatus.numElectricVehiclesAvailable += vehicleTypeAvailable.count;
+              }
+          }
+        }
+      }
+
       stationsStatusByStationIds.update(
         stationStatus.id,
         (value) => stationStatus,
@@ -213,6 +246,14 @@ class StationsSystem {
   }
 
 
+  Future<List<VehicleType>> _getVehicleTypes() async {
+    var client = http.Client();
+    var url = Uri.parse(vehicleTypesUrl);
+    var response = await client.get(url);
+
+    return _vehicleTypesFromJson(json.decode(response.body)['data']['vehicle_types']);
+  }
+
   Future<List<StationStatus>> _getStationsStatus() async {
     var client = http.Client();
     var url = Uri.parse(stationStatusUrl);
@@ -228,6 +269,10 @@ class StationsSystem {
 
     return _stationsInformationFromJson(json.decode(response.body)['data']['stations']);
   }
+
+  List<VehicleType> _vehicleTypesFromJson(list) => List<VehicleType>.from(
+    list.map((x) => VehicleType.fromJson(Map<String, dynamic>.from(x)))
+  );
 
   List<StationStatus> _stationsStatusFromJson(list) => List<StationStatus>.from(
     list.map((x) => StationStatus.fromJson(Map<String, dynamic>.from(x)))

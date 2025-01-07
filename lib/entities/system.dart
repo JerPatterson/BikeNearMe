@@ -10,6 +10,7 @@ class System {
     required this.textColor,
     required this.stationStatusUrl,
     required this.stationInformationUrl,
+    required this.vehicleTypesUrl,
   });
 
   final String id;
@@ -19,6 +20,7 @@ class System {
   final Color textColor;
   final String stationStatusUrl;
   final String stationInformationUrl;
+  final String vehicleTypesUrl;
 
   factory System.fromJson(Map<String, dynamic> json) => System(
     id: json['id'],
@@ -28,6 +30,7 @@ class System {
     textColor: Color(int.parse(json['text_color'])),
     stationStatusUrl: json['station_status_url'],
     stationInformationUrl: json['station_information_url'],
+    vehicleTypesUrl: json['vehicle_types_url'],
   );
 
 
