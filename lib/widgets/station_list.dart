@@ -33,7 +33,11 @@ class StationList extends StatelessWidget {
 
     _stationListTiles.sort((a, b) => a.distance.compareTo(b.distance));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      updateNbOfStations(_stationListTiles.length, _stationListTiles.last.stationsSystem.color);
+      updateNbOfStations(
+        _stationListTiles.length,
+        _stationListTiles.isNotEmpty ?
+          _stationListTiles.last.stationsSystem.color: Colors.transparent
+        );
     });
     
   }
