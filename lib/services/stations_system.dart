@@ -213,35 +213,43 @@ class StationsSystem {
   }
 
   Future<void> _setStationsStatus() async {
-    _stationsStatus = await _getStationsStatus();
-    for (var stationStatus in _stationsStatus) {
-      if (propulsionByVehicleTypeId.isNotEmpty) {
-          for (var vehicleTypeAvailable in stationStatus.vehicleTypesAvailable) {
-            if (propulsionByVehicleTypeId.containsKey(vehicleTypeAvailable.id)) {
-              if (propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric"
-                || propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric_assist") {
-                stationStatus.numElectricVehiclesAvailable += vehicleTypeAvailable.count;
-              }
+    try {
+      _stationsStatus = await _getStationsStatus();
+      for (var stationStatus in _stationsStatus) {
+        if (propulsionByVehicleTypeId.isNotEmpty) {
+            for (var vehicleTypeAvailable in stationStatus.vehicleTypesAvailable) {
+              if (propulsionByVehicleTypeId.containsKey(vehicleTypeAvailable.id)) {
+                if (propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric"
+                  || propulsionByVehicleTypeId[vehicleTypeAvailable.id] == "electric_assist") {
+                  stationStatus.numElectricVehiclesAvailable += vehicleTypeAvailable.count;
+                }
+            }
           }
         }
-      }
 
-      stationsStatusByStationIds.update(
-        stationStatus.id,
-        (value) => stationStatus,
-        ifAbsent: () => stationStatus,
-      );
+        stationsStatusByStationIds.update(
+          stationStatus.id,
+          (value) => stationStatus,
+          ifAbsent: () => stationStatus,
+        );
+      }
+    } catch (_) {
+      return;
     }
   }
 
   Future<void> _setStationsInformation() async {
-    _stationsInformation = await _getStationsInformation();
-    for (var stationInformation in _stationsInformation) {
-      stationsInformationByStationIds.update(
-        stationInformation.id,
-        (value) => stationInformation,
-        ifAbsent: () => stationInformation,
-      );
+    try {
+      _stationsInformation = await _getStationsInformation();
+      for (var stationInformation in _stationsInformation) {
+        stationsInformationByStationIds.update(
+          stationInformation.id,
+          (value) => stationInformation,
+          ifAbsent: () => stationInformation,
+        );
+      }
+    } catch (_) {
+      return;
     }
   }
 
