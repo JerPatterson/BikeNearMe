@@ -18,7 +18,7 @@ class StationInformation {
   final double lat;
   final double lon;
   final bool? isVirtualStation;
-  final int? capacity;
+  int? capacity;
   final bool? isChargingStation;
 
   factory StationInformation.fromJson(Map<String, dynamic> json) => StationInformation(

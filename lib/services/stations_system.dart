@@ -233,6 +233,11 @@ class StationsSystem {
           (value) => stationStatus,
           ifAbsent: () => stationStatus,
         );
+
+        if (stationsInformationByStationIds[stationStatus.id]!.capacity == null) {
+          stationsInformationByStationIds[stationStatus.id]!.capacity = stationStatus.numVehiclesAvailable + stationStatus.numVehiclesDisabled 
+            + stationStatus.numDocksAvailable! + stationStatus.numDocksDisabled;
+        }
       }
     } catch (_) {
       return;
