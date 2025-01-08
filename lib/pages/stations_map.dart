@@ -135,17 +135,16 @@ class _StationsMapPageState extends State<StationsMapPage> {
           _longitude = position.center.longitude;
         });
 
-
-        double offset = maxOffset - ((_mapController.camera.zoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
-        if (_userLatitude - offset <= _latitude && _userLatitude + offset >= _latitude
-          && _userLongitude - offset <= _longitude && _userLongitude + offset >= _longitude) {
-            _mapController.move(LatLng(_userLatitude, _userLongitude), _mapController.camera.zoom);
-            return;
-        }
-
         _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
         _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
-        if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
+        if (_isKnownPosition(_latitudeRounded, _longitudeRounded) ) {
+          double offset = maxOffset - ((_mapController.camera.zoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
+          if (_userLatitude - offset <= _latitude && _userLatitude + offset >= _latitude
+              && _userLongitude - offset <= _longitude && _userLongitude + offset >= _longitude) {
+            _mapController.move(LatLng(_userLatitude, _userLongitude), _mapController.camera.zoom);
+          }
+          return;
+        }
 
         List<Future<StationsSystem>> futureStationsSystems = [];
         for (System system in _systems.systems) {
