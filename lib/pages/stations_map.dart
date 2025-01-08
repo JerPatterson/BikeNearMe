@@ -51,7 +51,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   List<StationsSystem> _stationsSystems = [];
   int _numberOfStations = 0;
 
-  String _typeNotDisplayed = "docks";
+  String _typeNotDisplayed = "places";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
   Color _navigationBarColor = Colors.transparent;
 
@@ -115,7 +115,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   void updateKnownPositions(MapCamera position, bool _) {
     _positionChangedCallbackTimer?.cancel();
 
-      _positionChangedCallbackTimer = Timer(Duration(milliseconds: 800), () {
+      _positionChangedCallbackTimer = Timer(Duration(milliseconds: 600), () {
         bool triggerUpdateMarkers = false;
 
         setState(() {
@@ -189,7 +189,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
           _createMarker(
             stationsSystem.getStationAvailabilityIcon(
               stationInformation.id,
-              _typeNotDisplayed == "bikes",
+              _typeNotDisplayed == "vélos",
             ),
             system.color,
             stationInformation.lat,
@@ -342,36 +342,64 @@ class _StationsMapPageState extends State<StationsMapPage> {
         parallaxEnabled: true,
         parallaxOffset: 0.75,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          switch (_typeNotDisplayed) {
-            case "bikes":
-              _typeNotDisplayed = "docks";
-              _switchMarkerTypeIcon = BikeShare.dock;
-              updateMarkers();
-            case "docks":
-              _typeNotDisplayed = "bikes";
-              _switchMarkerTypeIcon = BikeShare.bike;
-              updateMarkers();
-              break;
-          }
-        },
-        tooltip: 'Display $_typeNotDisplayed instead',
-        shape: const CircleBorder(),
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-        splashColor: Colors.grey,
-        mini: true,
-        child: Text(
-          String.fromCharCode(
-            _switchMarkerTypeIcon.codePoint,
+      floatingActionButton: Column(
+        spacing: 5.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              switch (_typeNotDisplayed) {
+                case "vélos":
+                  _typeNotDisplayed = "places";
+                  _switchMarkerTypeIcon = BikeShare.dock;
+                  updateMarkers();
+                case "places":
+                  _typeNotDisplayed = "vélos";
+                  _switchMarkerTypeIcon = BikeShare.bike;
+                  updateMarkers();
+                  break;
+              }
+            },
+            tooltip: 'Montrer plutôt les $_typeNotDisplayed',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                _switchMarkerTypeIcon.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: _switchMarkerTypeIcon.fontFamily,
+                package: _switchMarkerTypeIcon.fontPackage,
+              )
+            ),
           ),
-          style: TextStyle(
-            fontSize: 20.0,
-            fontFamily: _switchMarkerTypeIcon.fontFamily,
-            package: _switchMarkerTypeIcon.fontPackage,
-          )
-        ),
+          if (_userLocationProvided && _userLatitude != _latitude && _userLongitude != _longitude) FloatingActionButton(
+            onPressed: () {
+              _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+            },
+            tooltip: 'Retourner à ma position',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                Icons.my_location.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: Icons.my_location.fontFamily,
+                package: Icons.my_location.fontPackage,
+              )
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
