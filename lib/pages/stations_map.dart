@@ -15,7 +15,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const minZoom = 10.0;
+const minZoom = 8.0;
 const maxZoom = 20.0;
 const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
@@ -53,6 +53,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   IconData _switchMarkerTypeIcon = BikeShare.dock;
   Color _navigationBarColor = Colors.transparent;
 
+  Timer? _positionChangedCallbackTimer;
   final MapController _mapController = MapController();
 
 
@@ -110,37 +111,41 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
 
   void updateKnownPositions(MapCamera position, bool _) {
-    setState(() {
-      _latitude = position.center.latitude;
-      _longitude = position.center.longitude;
-    });
+    _positionChangedCallbackTimer?.cancel();
 
-    _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
-    _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
-    if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
-
-    List<Future<StationsSystem>> futureStationsSystems = [];
-    for (System system in _systems.systems) {
-      if (_isUnknownStationsSystem(system.id)
-        && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
-        futureStationsSystems.add(
-          StationsSystem.create(system, _systems.getSystemAvailabilityById(system.id))
-        );
-      }
-    }
-
-    futureStationsSystems.wait.then((stationsSystems) {
-      for (StationsSystem stationsSystem in stationsSystems) {
+      _positionChangedCallbackTimer = Timer(Duration(milliseconds: 800), () {
         setState(() {
-          _stationsSystemByIds.putIfAbsent(
-            stationsSystem.id,
-            () => stationsSystem
-          );
+          _latitude = position.center.latitude;
+          _longitude = position.center.longitude;
         });
-      }
 
-      if (stationsSystems.isNotEmpty) updateMarkers();
-    });
+        _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
+        _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
+        if (_isKnownPosition(_latitudeRounded, _longitudeRounded)) return;
+
+        List<Future<StationsSystem>> futureStationsSystems = [];
+        for (System system in _systems.systems) {
+          if (_isUnknownStationsSystem(system.id)
+            && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
+            futureStationsSystems.add(
+              StationsSystem.create(system, _systems.getSystemAvailabilityById(system.id))
+            );
+          }
+        }
+
+        futureStationsSystems.wait.then((stationsSystems) {
+          for (StationsSystem stationsSystem in stationsSystems) {
+            setState(() {
+              _stationsSystemByIds.putIfAbsent(
+                stationsSystem.id,
+                () => stationsSystem
+              );
+            });
+          }
+
+          if (stationsSystems.isNotEmpty) updateMarkers();
+        });
+      });
   }
 
   bool _isKnownPosition(double lat, double lon) {
