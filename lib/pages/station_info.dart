@@ -17,6 +17,8 @@ const initialZoom = 14.0;
 const stationMarkerIconSize = 45.0;
 const positionIconSize = 20.0;
 
+typedef UpdateMarkerIconFunction = IconData Function(bool showDockAvailability);
+
 
 class StationInfoPage extends StatefulWidget {
   const StationInfoPage({
@@ -25,6 +27,7 @@ class StationInfoPage extends StatefulWidget {
     required this.stationStatus,
     required this.stationAvailability,
     required this.markerIcon,
+    required this.updateMarkerIcon,
     required this.textColor,
     required this.color,
     required this.showDockAvailability,
@@ -34,6 +37,7 @@ class StationInfoPage extends StatefulWidget {
   final StationStatus stationStatus;
   final Map<String, Map<String, Availability>>? stationAvailability;
   final IconData markerIcon;
+  final UpdateMarkerIconFunction updateMarkerIcon;
   final Color textColor;
   final Color color;
   final bool showDockAvailability;
@@ -43,10 +47,40 @@ class StationInfoPage extends StatefulWidget {
 }
 
 class _StationInfoPageState extends State<StationInfoPage> {
+  final panelController = PanelController();
+
+  late String _typeNotDisplayed;
+  late IconData _switchMarkerTypeIcon;
+  late bool localShowDockAvailability;
+  late IconData localMarkerIcon;
+
+
+  @override
+  void initState() {
+    super.initState();
+    localMarkerIcon = widget.markerIcon;
+    localShowDockAvailability = widget.showDockAvailability;
+    if (localShowDockAvailability) {
+      _typeNotDisplayed = "vélos";
+      _switchMarkerTypeIcon = BikeShare.bike;
+    } else {
+      _typeNotDisplayed = "places";
+      _switchMarkerTypeIcon = BikeShare.dock;
+    }
+  }
+
+
+  void updateShowDockAvailability(bool showDockAvailability) {
+    setState(() {
+      localShowDockAvailability = showDockAvailability;
+      localMarkerIcon = widget.updateMarkerIcon(localShowDockAvailability);
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final mapController = MapController();
-    final panelController = PanelController();
     final stationPosition = LatLng(widget.stationInformation.lat, widget.stationInformation.lon);
   
     return Scaffold(
@@ -81,7 +115,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                         size: stationMarkerIconSize,
                       ),
                       Icon(
-                        widget.markerIcon,
+                        localMarkerIcon,
                         color: widget.color,
                         size: stationMarkerIconSize,
                       ),
@@ -106,7 +140,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                     textBaseline: TextBaseline.ideographic,
                     children: [
                       Text(
-                        "${widget.showDockAvailability ? 
+                        "${localShowDockAvailability ? 
                           widget.stationStatus.numDocksAvailable :
                           widget.stationStatus.numVehiclesAvailable}",
                         overflow: TextOverflow.ellipsis,
@@ -173,7 +207,8 @@ class _StationInfoPageState extends State<StationInfoPage> {
                               color: widget.color,
                               stationCapacity: widget.stationInformation.capacity!,
                               stationAvailability: widget.stationAvailability!,
-                              showDockAvailability: widget.showDockAvailability,
+                              showDockAvailability: localShowDockAvailability,
+                              updateShowDockAvailability: updateShowDockAvailability,
                             ),
                           ),
                         );
@@ -258,7 +293,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(
-                            widget.markerIcon,
+                            localMarkerIcon,
                             color: Colors.black,
                             size: stationMarkerIconSize * 1.25,
                           ),
@@ -293,6 +328,67 @@ class _StationInfoPageState extends State<StationInfoPage> {
         parallaxEnabled: true,
         parallaxOffset: 0.75,
       ),
+
+      floatingActionButton: Column(
+        spacing: 5.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            tooltip: 'Retourner à la carte',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                Icons.close.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: Icons.close.fontFamily,
+                package: Icons.close.fontPackage,
+              )
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              switch (_typeNotDisplayed) {
+                case "vélos":
+                  _typeNotDisplayed = "places";
+                  _switchMarkerTypeIcon = BikeShare.dock;
+                  updateShowDockAvailability(false);
+                case "places":
+                  _typeNotDisplayed = "vélos";
+                  _switchMarkerTypeIcon = BikeShare.bike;
+                  updateShowDockAvailability(true);
+                  break;
+              }
+            },
+            tooltip: 'Montrer plutôt les $_typeNotDisplayed',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                _switchMarkerTypeIcon.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: _switchMarkerTypeIcon.fontFamily,
+                package: _switchMarkerTypeIcon.fontPackage,
+              )
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }

@@ -42,6 +42,7 @@ class StationListTile extends StatelessWidget {
               stationStatus: stationsSystem.getStationStatusById(stationInformation.id)!,
               stationAvailability: availabilityHistory,
               markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
+              updateMarkerIcon: (bool showDockAvailability) => stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
               textColor: stationsSystem.textColor,
               color: stationsSystem.color,
               showDockAvailability: showDockAvailability,

@@ -1,8 +1,11 @@
 import 'dart:math';
-
 import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/entities/day.dart';
+import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
+
+typedef UpdateShowDockAvailability = void Function(bool showDockAvailability);
+
 
 class StationChart extends StatefulWidget {
   const StationChart({
@@ -12,6 +15,7 @@ class StationChart extends StatefulWidget {
     required this.stationCapacity,
     required this.stationAvailability,
     required this.showDockAvailability,
+    required this.updateShowDockAvailability,
   });
 
   final Color textColor;
@@ -19,6 +23,7 @@ class StationChart extends StatefulWidget {
   final int stationCapacity;
   final Map<String, Map<String, Availability>> stationAvailability;
   final bool showDockAvailability;
+  final UpdateShowDockAvailability updateShowDockAvailability;
 
   @override
   State<StationChart> createState() => _StationChartState();
@@ -29,13 +34,27 @@ class _StationChartState extends State<StationChart> {
   late DayOfWeek _selectedDayOfWeek;
   final List<DayOfWeek> _daysOfWeek = [1, 2, 3, 4, 5, 6, 7].map((number) => DayOfWeek.create(number)).toList();
 
+  late String _typeNotDisplayed;
+  late IconData _switchMarkerTypeIcon;
+  late bool localShowDockAvailability;
+
 
   @override
   void initState() {
     super.initState();
+    localShowDockAvailability = widget.showDockAvailability;
+    if (localShowDockAvailability) {
+      _typeNotDisplayed = "vélos";
+      _switchMarkerTypeIcon = BikeShare.bike;
+    } else {
+      _typeNotDisplayed = "places";
+      _switchMarkerTypeIcon = BikeShare.dock;
+    }
+  
     _selectedDayOfWeek = DayOfWeek.create(DateTime.now().weekday);
     _availabilities = getStationAvailabilities();
   }
+
 
   List<Availability> getStationAvailabilities() {
     return List.generate(24, (index) =>
@@ -50,11 +69,12 @@ class _StationChartState extends State<StationChart> {
       ) ~/ (24 * widget.stationCapacity);
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
         margin: EdgeInsets.only(
           top: MediaQuery.of(context).size.height * 0.4,
         ),
@@ -87,7 +107,7 @@ class _StationChartState extends State<StationChart> {
             Row(
               children: [
                 Text(
-                  widget.showDockAvailability ?
+                  localShowDockAvailability ?
                     "Habituellement libre à " :
                     "Habituellement remplie à ",
                   textAlign: TextAlign.start,
@@ -98,7 +118,7 @@ class _StationChartState extends State<StationChart> {
                   ),
                 ),
                 Text(
-                  "${widget.showDockAvailability ?
+                  "${localShowDockAvailability ?
                     100 - getStationAverageAvailability() :
                     getStationAverageAvailability()}%",
                   textAlign: TextAlign.start,
@@ -186,7 +206,7 @@ class _StationChartState extends State<StationChart> {
                   width: (MediaQuery.of(context).size.width - 36) / _availabilities.length,
                   height: min(
                     MediaQuery.of(context).size.height * 0.3,
-                    widget.showDockAvailability ?
+                    localShowDockAvailability ?
                       MediaQuery.of(context).size.height * 0.3 * availability.docksAvailable / widget.stationCapacity :
                       MediaQuery.of(context).size.height * 0.3 * availability.bikesAvailable / widget.stationCapacity,
                   ),
@@ -214,6 +234,73 @@ class _StationChartState extends State<StationChart> {
           ],
         )
       ),
+
+      floatingActionButton: Column(
+        spacing: 5.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            tooltip: 'Retourner à l\'information de la station',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                Icons.close.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: Icons.close.fontFamily,
+                package: Icons.close.fontPackage,
+              )
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              switch (_typeNotDisplayed) {
+                case "vélos":
+                  _typeNotDisplayed = "places";
+                  _switchMarkerTypeIcon = BikeShare.dock;
+                  setState(() {
+                    localShowDockAvailability = false;
+                    widget.updateShowDockAvailability(localShowDockAvailability);
+                  });
+                case "places":
+                  _typeNotDisplayed = "vélos";
+                  _switchMarkerTypeIcon = BikeShare.bike;
+                  setState(() {
+                    localShowDockAvailability = true;
+                    widget.updateShowDockAvailability(localShowDockAvailability);
+                  });
+                  break;
+              }
+            },
+            tooltip: 'Montrer plutôt les $_typeNotDisplayed',
+            shape: const CircleBorder(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            splashColor: Colors.grey,
+            mini: true,
+            child: Text(
+              String.fromCharCode(
+                _switchMarkerTypeIcon.codePoint,
+              ),
+              style: TextStyle(
+                fontSize: 20.0,
+                fontFamily: _switchMarkerTypeIcon.fontFamily,
+                package: _switchMarkerTypeIcon.fontPackage,
+              )
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
