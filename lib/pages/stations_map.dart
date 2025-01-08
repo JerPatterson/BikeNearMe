@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:bike_near_me/entities/availibility.dart';
+import 'package:bike_near_me/pages/station_info.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
@@ -203,17 +205,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
       _stationsSystems.add(stationsSystem);
 
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
-        _markers.add(
-          _createMarker(
-            stationsSystem.getStationAvailabilityIcon(
-              stationInformation.id,
-              _typeNotDisplayed == "vélos",
-            ),
-            system.color,
-            stationInformation.lat,
-            stationInformation.lon,
-          ),
-        );
+        _markers.add(_createMarker(stationInformation, stationsSystem));
       }
 
       setState(() {
@@ -223,24 +215,53 @@ class _StationsMapPageState extends State<StationsMapPage> {
     }
   }
 
-  Marker _createMarker(IconData icon, Color color, double lat, double lon) {
+  Future<void> onMarkerTap(StationInformation stationInformation, StationsSystem stationsSystem) async {
+    final navigator = Navigator.of(context);
+    final showDockAvailability = _typeNotDisplayed == "vélos";
+    Map<String, Map<String, Availability>>? availabilityHistory = await stationsSystem.getStationAvailabilityHistory(stationInformation.id);
+    if (!context.mounted) return;
+    navigator.push(
+      MaterialPageRoute(
+        builder: (context) => StationInfoPage(
+          stationInformation: stationInformation,
+          stationStatus: stationsSystem.getStationStatusById(stationInformation.id)!,
+          stationAvailability: availabilityHistory,
+          markerIcon: stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
+          updateMarkerIcon: (bool showDockAvailability) => stationsSystem.getStationAvailabilityIcon(stationInformation.id, showDockAvailability),
+          textColor: stationsSystem.textColor,
+          color: stationsSystem.color,
+          showDockAvailability: showDockAvailability,
+        ),
+      ),
+    );
+  }
+
+  Marker _createMarker(StationInformation stationInformation, StationsSystem stationsSystem) {
     return Marker(
       width: stationMarkerIconSize,
       height: stationMarkerIconSize,
-      point: LatLng(lat, lon),
-      child: Stack(
-        children: [
-          const Icon(
-            BikeShare.marker_background,
-            color: Colors.white,
-            size: stationMarkerIconSize,
-          ),
-          Icon(
-            icon,
-            color: color,
-            size: stationMarkerIconSize,
-          ),
-        ],
+      point: LatLng(stationInformation.lat, stationInformation.lon),
+      child: GestureDetector(
+        onTap: () => {
+          onMarkerTap(stationInformation, stationsSystem)
+        },
+        child: Stack(
+          children: [
+            const Icon(
+              BikeShare.marker_background,
+              color: Colors.white,
+              size: stationMarkerIconSize,
+            ),
+            Icon(
+              stationsSystem.getStationAvailabilityIcon(
+                stationInformation.id,
+                _typeNotDisplayed == "vélos",
+              ),
+              color: stationsSystem.color,
+              size: stationMarkerIconSize,
+            ),
+          ],
+        ),
       ),
     );
   }
