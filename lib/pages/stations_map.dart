@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
 import 'package:bike_near_me/icons/bike_share.dart';
@@ -69,27 +69,35 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
 
   void initUserLocation() async {
-    var location = Location();
-    var serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return;
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return;
+      }
     }
-
-    var permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return;
+    
+    if (permission == LocationPermission.deniedForever) {
+      return;
     }
 
     _userLocationProvided = true;
-    final currentLocation = await location.getLocation();
-    _userLatitude = currentLocation.latitude!;
-    _userLongitude = currentLocation.longitude!;
+    final currentLocation = await Geolocator.getCurrentPosition();
+    _userLatitude = currentLocation.latitude;
+    _userLongitude = currentLocation.longitude;
     _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
-    location.onLocationChanged.listen((currentLocation) {
-      _userLatitude = currentLocation.latitude!;
-      _userLongitude = currentLocation.longitude!;
+
+    final LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
+
+    Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
+      setState(() {
+        if (position == null) return;
+        _userLatitude = position.latitude;
+        _userLongitude = position.longitude;
+      });
     });
   }
 
