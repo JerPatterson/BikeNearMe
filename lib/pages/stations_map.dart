@@ -34,7 +34,9 @@ class StationsMapPage extends StatefulWidget {
 
 class _StationsMapPageState extends State<StationsMapPage> {
   late final Systems _systems;
+  final Set<String> _inBoundsStationsSystems = {};
   final Map<String, StationsSystem> _stationsSystemByIds = {};
+  
   
   final Set<String> _knownPositions = {};
   double _latitudeRounded = initialCenter.latitude;
@@ -114,6 +116,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
     _positionChangedCallbackTimer?.cancel();
 
       _positionChangedCallbackTimer = Timer(Duration(milliseconds: 800), () {
+        bool triggerUpdateMarkers = false;
+
         setState(() {
           _latitude = position.center.latitude;
           _longitude = position.center.longitude;
@@ -125,11 +129,17 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
         List<Future<StationsSystem>> futureStationsSystems = [];
         for (System system in _systems.systems) {
-          if (_isUnknownStationsSystem(system.id)
-            && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
-            futureStationsSystems.add(
-              StationsSystem.create(system, _systems.getSystemAvailabilityById(system.id))
-            );
+          if (!_wasInBoundsStationsSystem(system.id) && system.isInBounds(_latitudeRounded, _longitudeRounded)) {
+            triggerUpdateMarkers = true;
+            _inBoundsStationsSystems.add(system.id);
+            if (_isUnknownStationsSystem(system.id)) {
+              futureStationsSystems.add(
+                StationsSystem.create(system, _systems.getSystemAvailabilityById(system.id))
+              );
+            }
+          } else if (!system.isInBounds(_latitudeRounded, _longitudeRounded)) {
+            triggerUpdateMarkers = true;
+            _inBoundsStationsSystems.remove(system.id);
           }
         }
 
@@ -143,7 +153,9 @@ class _StationsMapPageState extends State<StationsMapPage> {
             });
           }
 
-          if (stationsSystems.isNotEmpty) updateMarkers();
+          if (triggerUpdateMarkers) {
+            updateMarkers();
+          }
         });
       });
   }
@@ -159,6 +171,9 @@ class _StationsMapPageState extends State<StationsMapPage> {
     return !_stationsSystemByIds.containsKey(id);
   }
 
+  bool _wasInBoundsStationsSystem(String id) {
+    return _inBoundsStationsSystems.contains(id);
+  }
 
   void updateMarkers() {
     _markers.clear();
