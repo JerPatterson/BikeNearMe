@@ -17,6 +17,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 const minZoom = 8.0;
 const maxZoom = 20.0;
+const maxOffset = 0.001;
+const minOffset = 0.00001;
 const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
 
@@ -94,7 +96,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   void initMapRefresh() {
     Systems.create(FirebaseDatabase.instance).then((systems) {
       _systems = systems;
-      updateKnownPositions(
+      updateMapWithPosition(
         MapCamera(
           crs: Epsg3857(),
           center: initialCenter,
@@ -112,7 +114,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   }
 
 
-  void updateKnownPositions(MapCamera position, bool _) {
+  void updateMapWithPosition(MapCamera position, bool _) {
     _positionChangedCallbackTimer?.cancel();
 
       _positionChangedCallbackTimer = Timer(Duration(milliseconds: 600), () {
@@ -122,6 +124,14 @@ class _StationsMapPageState extends State<StationsMapPage> {
           _latitude = position.center.latitude;
           _longitude = position.center.longitude;
         });
+
+
+        double offset = maxOffset - ((_mapController.camera.zoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
+        if (_userLatitude - offset <= _latitude && _userLatitude + offset >= _latitude
+          && _userLongitude - offset <= _longitude && _userLongitude + offset >= _longitude) {
+            _mapController.move(LatLng(_userLatitude, _userLongitude), _mapController.camera.zoom);
+            return;
+        }
 
         _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
         _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
@@ -248,7 +258,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 minZoom: minZoom,
                 maxZoom: maxZoom,
                 onMapReady: initMapRefresh,
-                onPositionChanged: updateKnownPositions,
+                onPositionChanged: updateMapWithPosition,
                 interactionOptions: const InteractionOptions(
                   flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                 ),
@@ -305,6 +315,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
             ),
           ]
         ),
+
         panelBuilder: (ScrollController sc) {
           return SingleChildScrollView(
             controller: sc,
@@ -342,6 +353,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
         parallaxEnabled: true,
         parallaxOffset: 0.75,
       ),
+
       floatingActionButton: Column(
         spacing: 5.0,
         crossAxisAlignment: CrossAxisAlignment.start,
