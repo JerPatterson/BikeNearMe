@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/pages/station_info.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 const minZoom = 8.0;
 const maxZoom = 20.0;
@@ -53,6 +55,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
   List<Marker> _markers = [];
   List<StationsSystem> _stationsSystems = [];
+  String _mapLocationText = "2500 Chem. de Polytechnique, Montréal, QC";
+  bool _mapAtUserLocation = false;
   int _numberOfStations = 0;
 
   String _typeNotDisplayed = "places";
@@ -88,6 +92,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
     _userLatitude = currentLocation.latitude;
     _userLongitude = currentLocation.longitude;
     _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+    _mapAtUserLocation = true;
 
     final LocationSettings locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
@@ -126,6 +131,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
   void updateMapWithPosition(MapCamera position, bool _) {
     _positionChangedCallbackTimer?.cancel();
+    _mapAtUserLocation = false;
+    _mapLocationText = "Recherche...";
 
       _positionChangedCallbackTimer = Timer(Duration(milliseconds: 600), () {
         bool triggerUpdateMarkers = false;
@@ -134,6 +141,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
           _latitude = position.center.latitude;
           _longitude = position.center.longitude;
         });
+        updateMapLocationText();
 
         _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
         _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
@@ -142,6 +150,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
           if (_userLatitude - offset <= _latitude && _userLatitude + offset >= _latitude
               && _userLongitude - offset <= _longitude && _userLongitude + offset >= _longitude) {
             _mapController.move(LatLng(_userLatitude, _userLongitude), _mapController.camera.zoom);
+            _mapAtUserLocation = true;
           }
           return;
         }
@@ -265,6 +274,21 @@ class _StationsMapPageState extends State<StationsMapPage> {
     );
   }
 
+  void updateMapLocationText() async {
+    try {
+      var url = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=json&lat=$_latitude&lon=$_longitude&zoom=18&addressdetails=1");
+      var res = await http.get(url);
+      Map<String, dynamic> json = jsonDecode(res.body);
+      if (json.containsKey("display_name")) {
+        setState(() {
+          _mapLocationText = json["display_name"];
+        });
+      }
+    } catch (_) {
+      return;
+    }
+  }
+
   void updateNbOfStations(int numberOfStations, Color lastColor) {
     setState(() {
       _numberOfStations = numberOfStations;
@@ -386,23 +410,45 @@ class _StationsMapPageState extends State<StationsMapPage> {
                       padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0),
                       margin: const EdgeInsets.only(left: 24.0, right: 24.0),
                       decoration: BoxDecoration(
-                        color: Color(0xFFB219B7),
+                        color: _mapAtUserLocation ? Colors.black : Color(0xFFB219B7),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                       child: IntrinsicHeight(
                         child: Row(
                           children: [
-                            Text(
-                              String.fromCharCode(
-                                Icons.my_location.codePoint,
+                            if (!_mapAtUserLocation) GestureDetector(
+                              onTap: () {
+                                _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+                              },
+                              child: Text(
+                                String.fromCharCode(
+                                  Icons.my_location.codePoint,
+                                ),
+                                style: TextStyle(
+                                  height: 1.1,
+                                  color: Colors.white,
+                                  fontSize: 30.0,
+                                  fontFamily: Icons.my_location.fontFamily,
+                                  package: Icons.my_location.fontPackage,
+                                )
                               ),
-                              style: TextStyle(
-                                height: 1.1,
-                                color: Colors.white,
-                                fontSize: 30.0,
-                                fontFamily: Icons.my_location.fontFamily,
-                                package: Icons.my_location.fontPackage,
-                              )
+                            ),
+                            if (_mapAtUserLocation) GestureDetector(
+                              onTap: () {
+                                // TODO: Implement search
+                              },
+                              child: Text(
+                                String.fromCharCode(
+                                  Icons.search.codePoint,
+                                ),
+                                style: TextStyle(
+                                  height: 1.1,
+                                  color: Colors.white,
+                                  fontSize: 30.0,
+                                  fontFamily: Icons.search.fontFamily,
+                                  package: Icons.search.fontPackage,
+                                )
+                              ),
                             ),
                             VerticalDivider(
                               width: 21.0,
@@ -411,30 +457,32 @@ class _StationsMapPageState extends State<StationsMapPage> {
                               indent: 4.0,
                               endIndent: 4.0,
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Stations près de',
-                                  style: TextStyle(
-                                    height: 1.1,
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.normal,
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Stations près de",
+                                    style: TextStyle(
+                                      height: 1.1,
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '2500 Chemin de Polytechnique',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    height: 1.1,
-                                    color: Colors.white,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.normal,
+                                  Text(
+                                    _mapLocationText,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      height: 1.1,
+                                      color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
