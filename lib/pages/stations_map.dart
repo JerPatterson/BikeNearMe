@@ -294,7 +294,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
               mapController: _mapController,
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                  retinaMode: RetinaMode.isHighDensity(context),
                   userAgentPackageName: 'com.example.app',
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
@@ -354,6 +355,10 @@ class _StationsMapPageState extends State<StationsMapPage> {
                     TextSourceAttribution(
                       'OpenStreetMap contributors',
                       onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
+                    ),
+                    TextSourceAttribution(
+                      'CARTO',
+                      onTap: () => launchUrl(Uri.parse('https://carto.com/attributions')),
                     ),
                   ],
                 ),
