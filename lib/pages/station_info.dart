@@ -247,7 +247,7 @@ class _StationInfoPageState extends State<StationInfoPage> {
                       StationInfoTile(
                         icon: BikeShare.bike_disabled,
                         value: "${widget.stationStatus.numVehiclesDisabled}",
-                        valueName: widget.stationStatus.numDocksDisabled > 1 ? "vélos désactivés" : "vélo désactivé",
+                        valueName: widget.stationStatus.numVehiclesDisabled > 1 ? "vélos désactivés" : "vélo désactivé",
                         color: widget.color
                       ),
                       const Divider(
