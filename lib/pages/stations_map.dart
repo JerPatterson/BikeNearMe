@@ -296,6 +296,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 TileLayer(
                   urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                   retinaMode: RetinaMode.isHighDensity(context),
+                  subdomains: ['a', 'b', 'c', 'd'],
                   userAgentPackageName: 'com.example.app',
                   tileProvider: CancellableNetworkTileProvider(),
                 ),
@@ -362,25 +363,91 @@ class _StationsMapPageState extends State<StationsMapPage> {
                     ),
                   ],
                 ),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: _numberOfStations == 0 ? 
-                        Colors.transparent : _navigationBarColor,
+                Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 52.0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: _numberOfStations == 0 ? 
+                            Colors.transparent : _navigationBarColor,
+                        ),
+                        child: StationList(
+                          updateNbOfStations: updateNbOfStations,
+                          latitude: _latitude,
+                          longitude: _longitude,
+                          stationsSystems: _stationsSystems,
+                          showDockAvailability: _typeNotDisplayed == "bikes",
+                        ),
+                      ),
                     ),
-                  child: StationList(
-                      updateNbOfStations: updateNbOfStations,
-                      latitude: _latitude,
-                      longitude: _longitude,
-                      stationsSystems: _stationsSystems,
-                      showDockAvailability: _typeNotDisplayed == "bikes",
+                    Container(
+                      height: 60.0,
+                      padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0),
+                      margin: const EdgeInsets.only(left: 24.0, right: 24.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFB219B7),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      child: IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            Text(
+                              String.fromCharCode(
+                                Icons.my_location.codePoint,
+                              ),
+                              style: TextStyle(
+                                height: 1.1,
+                                color: Colors.white,
+                                fontSize: 30.0,
+                                fontFamily: Icons.my_location.fontFamily,
+                                package: Icons.my_location.fontPackage,
+                              )
+                            ),
+                            VerticalDivider(
+                              width: 21.0,
+                              color: Color(0x40FFFFFF),
+                              thickness: 1.0,
+                              indent: 4.0,
+                              endIndent: 4.0,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Stations près de',
+                                  style: TextStyle(
+                                    height: 1.1,
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                                Text(
+                                  '2500 Chemin de Polytechnique',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    height: 1.1,
+                                    color: Colors.white,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
+                  ],
                 ),
               ],
             ),
           );
         },
-        maxHeight: min(_numberOfStations * 90.8 + 124, MediaQuery.of(context).size.height),
-        minHeight: min(_numberOfStations * 90.8 + 124, MediaQuery.of(context).size.height * 0.35),
+        maxHeight: min(_numberOfStations * 90.8 + 184, MediaQuery.of(context).size.height),
+        minHeight: min(_numberOfStations * 90.8 + 184, MediaQuery.of(context).size.height * 0.35),
         renderPanelSheet: false,
         panelSnapping: false,
         parallaxEnabled: true,
