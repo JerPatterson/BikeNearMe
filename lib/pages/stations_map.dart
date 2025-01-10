@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:bike_near_me/entities/availibility.dart';
+import 'package:bike_near_me/pages/search_place.dart';
 import 'package:bike_near_me/pages/station_info.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:bike_near_me/entities/station_information.dart';
@@ -420,34 +421,22 @@ class _StationsMapPageState extends State<StationsMapPage> {
                               onTap: () {
                                 _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
                               },
-                              child: Text(
-                                String.fromCharCode(
-                                  Icons.my_location.codePoint,
-                                ),
-                                style: TextStyle(
-                                  height: 1.1,
-                                  color: Colors.white,
-                                  fontSize: 30.0,
-                                  fontFamily: Icons.my_location.fontFamily,
-                                  package: Icons.my_location.fontPackage,
-                                )
+                              child: Icon(
+                                Icons.my_location,
+                                size: 30.0,
+                                color: Colors.white,
                               ),
                             ),
                             if (_mapAtUserLocation) GestureDetector(
                               onTap: () {
-                                // TODO: Implement search
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(pageBuilder: (_, __, ___) => SearchPlacePage()),
+                                );
                               },
-                              child: Text(
-                                String.fromCharCode(
-                                  Icons.search.codePoint,
-                                ),
-                                style: TextStyle(
-                                  height: 1.1,
-                                  color: Colors.white,
-                                  fontSize: 30.0,
-                                  fontFamily: Icons.search.fontFamily,
-                                  package: Icons.search.fontPackage,
-                                )
+                              child: Icon(
+                                Icons.search,
+                                size: 30.0,
+                                color: Colors.white,
                               ),
                             ),
                             VerticalDivider(
@@ -458,30 +447,37 @@ class _StationsMapPageState extends State<StationsMapPage> {
                               endIndent: 4.0,
                             ),
                             Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Stations près de",
-                                    style: TextStyle(
-                                      height: 1.1,
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.normal,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    PageRouteBuilder(pageBuilder: (_, __, ___) => SearchPlacePage()),
+                                  );
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Stations près de",
+                                      style: TextStyle(
+                                        height: 1.1,
+                                        color: Colors.white,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.normal,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    _mapLocationText,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      height: 1.1,
-                                      color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.normal,
+                                    Text(
+                                      _mapLocationText,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        height: 1.1,
+                                        color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.normal,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ],
