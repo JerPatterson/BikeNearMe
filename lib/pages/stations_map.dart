@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bike_near_me/entities/availibility.dart';
 import 'package:bike_near_me/pages/search_place.dart';
 import 'package:bike_near_me/pages/station_info.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:bike_near_me/entities/station_information.dart';
 import 'package:bike_near_me/entities/system.dart';
@@ -63,6 +64,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   String _typeNotDisplayed = "places";
   IconData _switchMarkerTypeIcon = BikeShare.dock;
   Color _navigationBarColor = Colors.transparent;
+  SystemUiOverlayStyle _statusBarStyle = SystemUiOverlayStyle.dark;
 
   Timer? _positionChangedCallbackTimer;
   final MapController _mapController = MapController();
@@ -300,168 +302,151 @@ class _StationsMapPageState extends State<StationsMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SlidingUpPanel(
-        body: Stack(
-          children: [
-            FlutterMap(
-              options: MapOptions(
-                initialCenter: LatLng(_userLatitude, _userLongitude),
-                initialZoom: initialZoom,
-                minZoom: minZoom,
-                maxZoom: maxZoom,
-                onMapReady: initMapRefresh,
-                onPositionChanged: updateMapWithPosition,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                ),
-              ),
-              mapController: _mapController,
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                  retinaMode: RetinaMode.isHighDensity(context),
-                  subdomains: ['a', 'b', 'c', 'd'],
-                  userAgentPackageName: 'com.example.app',
-                  tileProvider: CancellableNetworkTileProvider(),
-                ),
-                MarkerLayer(
-                  markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
-                ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.circle,
-                    size: positionIconSize + 4,
-                    color: Colors.white
+    return AnnotatedRegion(
+      value: _statusBarStyle,
+      child: Scaffold(
+        body: SlidingUpPanel(
+          onPanelSlide: (position) {
+            setState(() {
+              if (position == 1.0 && _numberOfStations * 90.8 + 200 >= MediaQuery.of(context).size.height) {
+                _statusBarStyle = SystemUiOverlayStyle.light;
+              } else {
+                _statusBarStyle = SystemUiOverlayStyle.dark;
+              }
+            });
+          },
+          body: Stack(
+            children: [
+              FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(_userLatitude, _userLongitude),
+                  initialZoom: initialZoom,
+                  minZoom: minZoom,
+                  maxZoom: maxZoom,
+                  onMapReady: initMapRefresh,
+                  onPositionChanged: updateMapWithPosition,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
                   ),
                 ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.circle,
-                    size: positionIconSize,
-                    color: Color(0xFFB219B7)
+                mapController: _mapController,
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    retinaMode: RetinaMode.isHighDensity(context),
+                    subdomains: ['a', 'b', 'c', 'd'],
+                    userAgentPackageName: 'com.example.app',
+                    tileProvider: CancellableNetworkTileProvider(),
                   ),
-                ),
-                MarkerLayer(
-                  markers: !_userLocationProvided ? [] : [
-                    Marker(
-                      point: LatLng(_userLatitude, _userLongitude),
-                      child: const Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Icon(
-                            Icons.circle,
-                            size: positionIconSize + 4,
-                            color: Colors.white
-                          ),
-                          Icon(
-                            Icons.circle,
-                            size: positionIconSize,
-                            color: Color(0xFF217DFC)
-                          ),
-                        ],
-                      ),
+                  MarkerLayer(
+                    markers: [for (int i = 0; i < _markers.length; i++) _markers[i]],
+                  ),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.circle,
+                      size: positionIconSize + 4,
+                      color: Colors.white
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ]
-        ),
-
-        panelBuilder: (ScrollController sc) {
-          return SingleChildScrollView(
-            controller: sc,
-            child: Column(
-              children: [
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      'OpenStreetMap contributors',
-                      onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
+                  ),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.circle,
+                      size: positionIconSize,
+                      color: Color(0xFFB219B7)
                     ),
-                    TextSourceAttribution(
-                      'CARTO',
-                      onTap: () => launchUrl(Uri.parse('https://carto.com/attributions')),
-                    ),
-                  ],
-                ),
-                Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 52.0),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: _numberOfStations == 0 ? 
-                            Colors.transparent : _navigationBarColor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: StationList(
-                            updateNbOfStations: updateNbOfStations,
-                            latitude: _latitude,
-                            longitude: _longitude,
-                            stationsSystems: _stationsSystems,
-                            showDockAvailability: _typeNotDisplayed == "bikes",
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 60.0,
-                      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                      margin: const EdgeInsets.only(left: 24.0, right: 24.0),
-                      decoration: BoxDecoration(
-                        color: _mapAtUserLocation ? Colors.black : Color(0xFFB219B7),
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      child: IntrinsicHeight(
-                        child: Row(
+                  ),
+                  MarkerLayer(
+                    markers: !_userLocationProvided ? [] : [
+                      Marker(
+                        point: LatLng(_userLatitude, _userLongitude),
+                        child: const Stack(
+                          alignment: Alignment.center,
                           children: [
-                            if (_userLocationProvided && !_mapAtUserLocation) InkWell(
-                                onTap: () {
-                                  _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
-                                },
-                                child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                child: Icon(
-                                  Icons.my_location,
-                                  size: 30.0,
-                                  color: Colors.white,
-                                ),
-                              ),
+                            Icon(
+                              Icons.circle,
+                              size: positionIconSize + 4,
+                              color: Colors.white
                             ),
-                            if (!_userLocationProvided || _mapAtUserLocation) InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) => SearchPlacePage(
-                                      latitude: _latitude,
-                                      longitude: _longitude,
-                                    ),
+                            Icon(
+                              Icons.circle,
+                              size: positionIconSize,
+                              color: Color(0xFF217DFC)
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ]
+          ),
+      
+          panelBuilder: (ScrollController sc) {
+            return SingleChildScrollView(
+              controller: sc,
+              child: Column(
+                children: [
+                  RichAttributionWidget(
+                    attributions: [
+                      TextSourceAttribution(
+                        'OpenStreetMap contributors',
+                        onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
+                      ),
+                      TextSourceAttribution(
+                        'CARTO',
+                        onTap: () => launchUrl(Uri.parse('https://carto.com/attributions')),
+                      ),
+                    ],
+                  ),
+                  Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 52.0),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: _numberOfStations == 0 ? 
+                              Colors.transparent : _navigationBarColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: StationList(
+                              updateNbOfStations: updateNbOfStations,
+                              latitude: _latitude,
+                              longitude: _longitude,
+                              stationsSystems: _stationsSystems,
+                              showDockAvailability: _typeNotDisplayed == "bikes",
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 60.0,
+                        padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                        margin: const EdgeInsets.only(left: 24.0, right: 24.0),
+                        decoration: BoxDecoration(
+                          color: _mapAtUserLocation ? Colors.black : Color(0xFFB219B7),
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              if (_userLocationProvided && !_mapAtUserLocation) InkWell(
+                                  onTap: () {
+                                    _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+                                  },
+                                  child: Padding(
+                                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                  child: Icon(
+                                    Icons.my_location,
+                                    size: 30.0,
+                                    color: Colors.white,
                                   ),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                child: Icon(
-                                  Icons.search,
-                                  size: 30.0,
-                                  color: Colors.white,
                                 ),
                               ),
-                            ),
-                            VerticalDivider(
-                              width: 21.0,
-                              color: Color(0x40FFFFFF),
-                              thickness: 1.0,
-                              indent: 4.0,
-                              endIndent: 4.0,
-                            ),
-                            Flexible(
-                              child: InkWell(
+                              if (!_userLocationProvided || _mapAtUserLocation) InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(
                                     PageRouteBuilder(
@@ -474,112 +459,141 @@ class _StationsMapPageState extends State<StationsMapPage> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Stations près de",
-                                        style: TextStyle(
-                                          height: 1.1,
-                                          color: Colors.white,
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                      ),
-                                      Text(
-                                        _mapLocationText,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          height: 1.1,
-                                          color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                      ),
-                                    ],
+                                  child: Icon(
+                                    Icons.search,
+                                    size: 30.0,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                              VerticalDivider(
+                                width: 21.0,
+                                color: Color(0x40FFFFFF),
+                                thickness: 1.0,
+                                indent: 4.0,
+                                endIndent: 4.0,
+                              ),
+                              Flexible(
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                        pageBuilder: (_, __, ___) => SearchPlacePage(
+                                          latitude: _latitude,
+                                          longitude: _longitude,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Stations près de",
+                                          style: TextStyle(
+                                            height: 1.1,
+                                            color: Colors.white,
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                        Text(
+                                          _mapLocationText,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            height: 1.1,
+                                            color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+          maxHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height),
+          minHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height * 0.35),
+          renderPanelSheet: false,
+          panelSnapping: false,
+          parallaxEnabled: true,
+          parallaxOffset: 0.75,
+        ),
+      
+        floatingActionButton: Column(
+          spacing: 5.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                switch (_typeNotDisplayed) {
+                  case "vélos":
+                    _typeNotDisplayed = "places";
+                    _switchMarkerTypeIcon = BikeShare.dock;
+                    updateMarkers();
+                  case "places":
+                    _typeNotDisplayed = "vélos";
+                    _switchMarkerTypeIcon = BikeShare.bike;
+                    updateMarkers();
+                    break;
+                }
+              },
+              tooltip: 'Montrer plutôt les $_typeNotDisplayed',
+              shape: const CircleBorder(),
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.white,
+              splashColor: Colors.grey,
+              mini: true,
+              child: Text(
+                String.fromCharCode(
+                  _switchMarkerTypeIcon.codePoint,
                 ),
-              ],
-            ),
-          );
-        },
-        maxHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height),
-        minHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height * 0.35),
-        renderPanelSheet: false,
-        panelSnapping: false,
-        parallaxEnabled: true,
-        parallaxOffset: 0.75,
-      ),
-
-      floatingActionButton: Column(
-        spacing: 5.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        textDirection: TextDirection.ltr,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              switch (_typeNotDisplayed) {
-                case "vélos":
-                  _typeNotDisplayed = "places";
-                  _switchMarkerTypeIcon = BikeShare.dock;
-                  updateMarkers();
-                case "places":
-                  _typeNotDisplayed = "vélos";
-                  _switchMarkerTypeIcon = BikeShare.bike;
-                  updateMarkers();
-                  break;
-              }
-            },
-            tooltip: 'Montrer plutôt les $_typeNotDisplayed',
-            shape: const CircleBorder(),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            splashColor: Colors.grey,
-            mini: true,
-            child: Text(
-              String.fromCharCode(
-                _switchMarkerTypeIcon.codePoint,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: _switchMarkerTypeIcon.fontFamily,
+                  package: _switchMarkerTypeIcon.fontPackage,
+                )
               ),
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: _switchMarkerTypeIcon.fontFamily,
-                package: _switchMarkerTypeIcon.fontPackage,
-              )
             ),
-          ),
-          if (_userLocationProvided && _userLatitude != _latitude && _userLongitude != _longitude) FloatingActionButton(
-            onPressed: () {
-              _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
-            },
-            tooltip: 'Retourner à ma position',
-            shape: const CircleBorder(),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            splashColor: Colors.grey,
-            mini: true,
-            child: Text(
-              String.fromCharCode(
-                Icons.my_location.codePoint,
+            if (_userLocationProvided && _userLatitude != _latitude && _userLongitude != _longitude) FloatingActionButton(
+              onPressed: () {
+                _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+              },
+              tooltip: 'Retourner à ma position',
+              shape: const CircleBorder(),
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.white,
+              splashColor: Colors.grey,
+              mini: true,
+              child: Text(
+                String.fromCharCode(
+                  Icons.my_location.codePoint,
+                ),
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: Icons.my_location.fontFamily,
+                  package: Icons.my_location.fontPackage,
+                )
               ),
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: Icons.my_location.fontFamily,
-                package: Icons.my_location.fontPackage,
-              )
             ),
-          ),
-        ],
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }

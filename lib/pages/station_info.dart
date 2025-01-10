@@ -5,6 +5,7 @@ import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:bike_near_me/pages/station_chart.dart';
 import 'package:bike_near_me/widgets/station_info_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
@@ -83,312 +84,315 @@ class _StationInfoPageState extends State<StationInfoPage> {
     final mapController = MapController();
     final stationPosition = LatLng(widget.stationInformation.lat, widget.stationInformation.lon);
   
-    return Scaffold(
-      body: SlidingUpPanel(
-        controller: panelController,
-        body: FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: stationPosition,
-            initialZoom: initialZoom,
-            minZoom: minZoom,
-            maxZoom: maxZoom,
-            interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-            )
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.example.app',
-              tileProvider: CancellableNetworkTileProvider(),
+    return AnnotatedRegion(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        body: SlidingUpPanel(
+          controller: panelController,
+          body: FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              initialCenter: stationPosition,
+              initialZoom: initialZoom,
+              minZoom: minZoom,
+              maxZoom: maxZoom,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              )
             ),
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: stationPosition,
-                  child: Stack(
-                    children: [
-                      const Icon(
-                        BikeShare.marker_background,
-                        color: Colors.white,
-                        size: stationMarkerIconSize,
-                      ),
-                      Icon(
-                        localMarkerIcon,
-                        color: widget.color,
-                        size: stationMarkerIconSize,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-
-        panel: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 12, right: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.ideographic,
-                    children: [
-                      Text(
-                        "${localShowDockAvailability ? 
-                          widget.stationStatus.numDocksAvailable :
-                          widget.stationStatus.numVehiclesAvailable}",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.app',
+                tileProvider: CancellableNetworkTileProvider(),
+              ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: stationPosition,
+                    child: Stack(
+                      children: [
+                        const Icon(
+                          BikeShare.marker_background,
+                          color: Colors.white,
+                          size: stationMarkerIconSize,
+                        ),
+                        Icon(
+                          localMarkerIcon,
                           color: widget.color,
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
+                          size: stationMarkerIconSize,
                         ),
-                      ),
-                      Text(
-                        "/${widget.stationInformation.capacity}",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: widget.color,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (widget.stationAvailability != null) Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12.0),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: widget.color.withAlpha(80),
-                          blurRadius: 6,
-                          spreadRadius: 3,
-                        )
-                      ]
-                    ),
-                    child: ElevatedButton.icon(
-                      icon: Icon(
-                        Icons.bar_chart,
-                        color: widget.textColor,
-                        size: 20,
-                      ),
-                      label: Text(
-                        "Disponibilité",
-                        style: TextStyle(
-                          color: widget.textColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(12.0),
-                        backgroundColor: widget.color,
-                        shadowColor: widget.color,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
-                      onPressed: () {
-                        mapController.move(stationPosition, initialZoom);
-                        panelController.open();
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            opaque: false,
-                            pageBuilder: (_, __, ___) => StationChart(
-                              textColor: widget.textColor,
-                              color: widget.color,
-                              stationCapacity: widget.stationInformation.capacity!,
-                              stationAvailability: widget.stationAvailability!,
-                              showDockAvailability: localShowDockAvailability,
-                              updateShowDockAvailability: updateShowDockAvailability,
-                            ),
-                          ),
-                        );
-                      },
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-            Stack(
-              children: [
-                Container(
-                  color: Colors.white,
-                  margin: const EdgeInsets.only(top: 40),
-                  padding: const EdgeInsets.fromLTRB(16, 40, 8, 24),
-                  child: Column(
-                    children: [
-                      StationInfoTile(
-                        icon: BikeShare.bike,
-                        value: "${widget.stationStatus.numVehiclesAvailable}",
-                        valueName: widget.stationStatus.numVehiclesAvailable > 1 ? "vélos" : "vélo",
-                        color: widget.color
-                      ),
-                      const Divider(
-                        height: 1,
-                      ),
-                      StationInfoTile(
-                        icon: BikeShare.bike_electric,
-                        value: "${widget.stationStatus.numElectricVehiclesAvailable}",
-                        valueName: widget.stationStatus.numElectricVehiclesAvailable > 1 ? "vélos électriques" : "vélo électrique",
-                        color: widget.color
-                      ),
-                      const Divider(
-                        height: 1,
-                      ),
-                      StationInfoTile(
-                        icon: BikeShare.bike_disabled,
-                        value: "${widget.stationStatus.numVehiclesDisabled}",
-                        valueName: widget.stationStatus.numVehiclesDisabled > 1 ? "vélos désactivés" : "vélo désactivé",
-                        color: widget.color
-                      ),
-                      const Divider(
-                        height: 1,
-                      ),
-                      StationInfoTile(
-                        icon: BikeShare.dock,
-                        value: "${widget.stationStatus.numDocksAvailable}",
-                        valueName: widget.stationStatus.numDocksAvailable! > 1 ? "places" : "place",
-                        color: widget.color
-                      ),
-                      const Divider(
-                        height: 1,
-                      ),
-                      StationInfoTile(
-                        icon: BikeShare.dock_disabled,
-                        value: "${widget.stationStatus.numDocksDisabled}",
-                        valueName: widget.stationStatus.numDocksDisabled > 1 ? "places désactivées" : "place désactivée",
-                        color: widget.color
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withValues(alpha: 0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(0, 3),
+            ],
+          ),
+      
+          panel: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.ideographic,
+                      children: [
+                        Text(
+                          "${localShowDockAvailability ? 
+                            widget.stationStatus.numDocksAvailable :
+                            widget.stationStatus.numVehiclesAvailable}",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: widget.color,
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "/${widget.stationInformation.capacity}",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: widget.color,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(
-                            localMarkerIcon,
-                            color: Colors.black,
-                            size: stationMarkerIconSize * 1.25,
+                    if (widget.stationAvailability != null) Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12.0),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: widget.color.withAlpha(80),
+                            blurRadius: 6,
+                            spreadRadius: 3,
+                          )
+                        ]
+                      ),
+                      child: ElevatedButton.icon(
+                        icon: Icon(
+                          Icons.bar_chart,
+                          color: widget.textColor,
+                          size: 20,
+                        ),
+                        label: Text(
+                          "Disponibilité",
+                          style: TextStyle(
+                            color: widget.textColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6),
-                              child: Text(
-                                widget.stationInformation.name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.all(12.0),
+                          backgroundColor: widget.color,
+                          shadowColor: widget.color,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          mapController.move(stationPosition, initialZoom);
+                          panelController.open();
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              opaque: false,
+                              pageBuilder: (_, __, ___) => StationChart(
+                                textColor: widget.textColor,
+                                color: widget.color,
+                                stationCapacity: widget.stationInformation.capacity!,
+                                stationAvailability: widget.stationAvailability!,
+                                showDockAvailability: localShowDockAvailability,
+                                updateShowDockAvailability: updateShowDockAvailability,
                               ),
                             ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Stack(
+                children: [
+                  Container(
+                    color: Colors.white,
+                    margin: const EdgeInsets.only(top: 40),
+                    padding: const EdgeInsets.fromLTRB(16, 40, 8, 24),
+                    child: Column(
+                      children: [
+                        StationInfoTile(
+                          icon: BikeShare.bike,
+                          value: "${widget.stationStatus.numVehiclesAvailable}",
+                          valueName: widget.stationStatus.numVehiclesAvailable > 1 ? "vélos" : "vélo",
+                          color: widget.color
+                        ),
+                        const Divider(
+                          height: 1,
+                        ),
+                        StationInfoTile(
+                          icon: BikeShare.bike_electric,
+                          value: "${widget.stationStatus.numElectricVehiclesAvailable}",
+                          valueName: widget.stationStatus.numElectricVehiclesAvailable > 1 ? "vélos électriques" : "vélo électrique",
+                          color: widget.color
+                        ),
+                        const Divider(
+                          height: 1,
+                        ),
+                        StationInfoTile(
+                          icon: BikeShare.bike_disabled,
+                          value: "${widget.stationStatus.numVehiclesDisabled}",
+                          valueName: widget.stationStatus.numVehiclesDisabled > 1 ? "vélos désactivés" : "vélo désactivé",
+                          color: widget.color
+                        ),
+                        const Divider(
+                          height: 1,
+                        ),
+                        StationInfoTile(
+                          icon: BikeShare.dock,
+                          value: "${widget.stationStatus.numDocksAvailable}",
+                          valueName: widget.stationStatus.numDocksAvailable! > 1 ? "places" : "place",
+                          color: widget.color
+                        ),
+                        const Divider(
+                          height: 1,
+                        ),
+                        StationInfoTile(
+                          icon: BikeShare.dock_disabled,
+                          value: "${widget.stationStatus.numDocksDisabled}",
+                          valueName: widget.stationStatus.numDocksDisabled > 1 ? "places désactivées" : "place désactivée",
+                          color: widget.color
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withValues(alpha: 0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              localMarkerIcon,
+                              color: Colors.black,
+                              size: stationMarkerIconSize * 1.25,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: Text(
+                                  widget.stationInformation.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                ],
+              ),
+            ],
+          ),
+          maxHeight: 470,
+          minHeight: 170,
+          renderPanelSheet: false,
+          panelSnapping: false,
+          parallaxEnabled: true,
+          parallaxOffset: 0.75,
+        ),
+      
+        floatingActionButton: Column(
+          spacing: 5.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.ltr,
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              tooltip: 'Retourner à la carte',
+              shape: const CircleBorder(),
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.white,
+              splashColor: Colors.grey,
+              mini: true,
+              child: Text(
+                String.fromCharCode(
+                  Icons.close.codePoint,
                 ),
-              ],
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: Icons.close.fontFamily,
+                  package: Icons.close.fontPackage,
+                )
+              ),
+            ),
+            FloatingActionButton(
+              onPressed: () {
+                switch (_typeNotDisplayed) {
+                  case "vélos":
+                    _typeNotDisplayed = "places";
+                    _switchMarkerTypeIcon = BikeShare.dock;
+                    updateShowDockAvailability(false);
+                  case "places":
+                    _typeNotDisplayed = "vélos";
+                    _switchMarkerTypeIcon = BikeShare.bike;
+                    updateShowDockAvailability(true);
+                    break;
+                }
+              },
+              tooltip: 'Montrer plutôt les $_typeNotDisplayed',
+              shape: const CircleBorder(),
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.white,
+              splashColor: Colors.grey,
+              mini: true,
+              child: Text(
+                String.fromCharCode(
+                  _switchMarkerTypeIcon.codePoint,
+                ),
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontFamily: _switchMarkerTypeIcon.fontFamily,
+                  package: _switchMarkerTypeIcon.fontPackage,
+                )
+              ),
             ),
           ],
         ),
-        maxHeight: 470,
-        minHeight: 170,
-        renderPanelSheet: false,
-        panelSnapping: false,
-        parallaxEnabled: true,
-        parallaxOffset: 0.75,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       ),
-
-      floatingActionButton: Column(
-        spacing: 5.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        textDirection: TextDirection.ltr,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            tooltip: 'Retourner à la carte',
-            shape: const CircleBorder(),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            splashColor: Colors.grey,
-            mini: true,
-            child: Text(
-              String.fromCharCode(
-                Icons.close.codePoint,
-              ),
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: Icons.close.fontFamily,
-                package: Icons.close.fontPackage,
-              )
-            ),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              switch (_typeNotDisplayed) {
-                case "vélos":
-                  _typeNotDisplayed = "places";
-                  _switchMarkerTypeIcon = BikeShare.dock;
-                  updateShowDockAvailability(false);
-                case "places":
-                  _typeNotDisplayed = "vélos";
-                  _switchMarkerTypeIcon = BikeShare.bike;
-                  updateShowDockAvailability(true);
-                  break;
-              }
-            },
-            tooltip: 'Montrer plutôt les $_typeNotDisplayed',
-            shape: const CircleBorder(),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            splashColor: Colors.grey,
-            mini: true,
-            child: Text(
-              String.fromCharCode(
-                _switchMarkerTypeIcon.codePoint,
-              ),
-              style: TextStyle(
-                fontSize: 20.0,
-                fontFamily: _switchMarkerTypeIcon.fontFamily,
-                package: _switchMarkerTypeIcon.fontPackage,
-              )
-            ),
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 }
