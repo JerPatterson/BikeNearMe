@@ -62,7 +62,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
           Container(
             color: Colors.black,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 50.0, 16.0, 16.0),
               child: Row(
                 children: [
                   Icon(
@@ -76,6 +76,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                       onChanged: (value) => {
                         updateSuggestionsWithInput(value)
                       },
+                      autofocus: true,
                       cursorColor: Colors.white,
                       style: const TextStyle(
                         color: Colors.white,
@@ -103,7 +104,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
             ),
           ),
 
-          Padding(
+          if (_placeSuggestions.isNotEmpty) Padding(
             padding: const EdgeInsets.only(left: 18.0, top: 16.0),
             child: const Text(
               "RÉSULTATS DE RECHERCHE",
@@ -114,7 +115,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               ),
             ),
           ),
-          Divider(
+          if (_placeSuggestions.isNotEmpty) Divider(
             height: 9.0,
             color: Color(0x40000000),
             thickness: 1.0,
@@ -123,6 +124,8 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
           ),
           Expanded(
             child: ListView.builder(
+              padding: EdgeInsets.zero,
+              physics: const ClampingScrollPhysics(),
               itemCount: _placeSuggestions.length,
               itemBuilder: (context, index) {
                 return Padding(
@@ -142,6 +145,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                             const SizedBox(height: 8.0),
                             Text(
                               _placeSuggestions[index].name,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -150,6 +154,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                             ),
                             Text(
                               _placeSuggestions[index].subName,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 color: Color(0xF0000000),
                                 fontSize: 12,

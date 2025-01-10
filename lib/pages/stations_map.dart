@@ -397,12 +397,15 @@ class _StationsMapPageState extends State<StationsMapPage> {
                           color: _numberOfStations == 0 ? 
                             Colors.transparent : _navigationBarColor,
                         ),
-                        child: StationList(
-                          updateNbOfStations: updateNbOfStations,
-                          latitude: _latitude,
-                          longitude: _longitude,
-                          stationsSystems: _stationsSystems,
-                          showDockAvailability: _typeNotDisplayed == "bikes",
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: StationList(
+                            updateNbOfStations: updateNbOfStations,
+                            latitude: _latitude,
+                            longitude: _longitude,
+                            stationsSystems: _stationsSystems,
+                            showDockAvailability: _typeNotDisplayed == "bikes",
+                          ),
                         ),
                       ),
                     ),
@@ -509,8 +512,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
             ),
           );
         },
-        maxHeight: min(_numberOfStations * 90.8 + 184, MediaQuery.of(context).size.height),
-        minHeight: min(_numberOfStations * 90.8 + 184, MediaQuery.of(context).size.height * 0.35),
+        maxHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height),
+        minHeight: min(_numberOfStations * 90.8 + 200, MediaQuery.of(context).size.height * 0.35),
         renderPanelSheet: false,
         panelSnapping: false,
         parallaxEnabled: true,
