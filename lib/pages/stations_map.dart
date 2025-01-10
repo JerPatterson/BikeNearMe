@@ -408,7 +408,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                     ),
                     Container(
                       height: 60.0,
-                      padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 8.0),
+                      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
                       margin: const EdgeInsets.only(left: 24.0, right: 24.0),
                       decoration: BoxDecoration(
                         color: _mapAtUserLocation ? Colors.black : Color(0xFFB219B7),
@@ -417,26 +417,37 @@ class _StationsMapPageState extends State<StationsMapPage> {
                       child: IntrinsicHeight(
                         child: Row(
                           children: [
-                            if (!_mapAtUserLocation) GestureDetector(
-                              onTap: () {
-                                _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
-                              },
-                              child: Icon(
-                                Icons.my_location,
-                                size: 30.0,
-                                color: Colors.white,
+                            if (_userLocationProvided && !_mapAtUserLocation) InkWell(
+                                onTap: () {
+                                  _mapController.move(LatLng(_userLatitude, _userLongitude), initialZoom);
+                                },
+                                child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                child: Icon(
+                                  Icons.my_location,
+                                  size: 30.0,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            if (_mapAtUserLocation) GestureDetector(
+                            if (!_userLocationProvided || _mapAtUserLocation) InkWell(
                               onTap: () {
                                 Navigator.of(context).push(
-                                  PageRouteBuilder(pageBuilder: (_, __, ___) => SearchPlacePage()),
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) => SearchPlacePage(
+                                      latitude: _latitude,
+                                      longitude: _longitude,
+                                    ),
+                                  ),
                                 );
                               },
-                              child: Icon(
-                                Icons.search,
-                                size: 30.0,
-                                color: Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 30.0,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             VerticalDivider(
@@ -447,36 +458,44 @@ class _StationsMapPageState extends State<StationsMapPage> {
                               endIndent: 4.0,
                             ),
                             Flexible(
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(
-                                    PageRouteBuilder(pageBuilder: (_, __, ___) => SearchPlacePage()),
+                                    PageRouteBuilder(
+                                      pageBuilder: (_, __, ___) => SearchPlacePage(
+                                        latitude: _latitude,
+                                        longitude: _longitude,
+                                      ),
+                                    ),
                                   );
                                 },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Stations près de",
-                                      style: TextStyle(
-                                        height: 1.1,
-                                        color: Colors.white,
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.normal,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Stations près de",
+                                        style: TextStyle(
+                                          height: 1.1,
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.normal,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      _mapLocationText,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        height: 1.1,
-                                        color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.normal,
+                                      Text(
+                                        _mapLocationText,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          height: 1.1,
+                                          color: _mapLocationText == "Recherche..." ? Color(0xC0FFFFFF) : Colors.white,
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.normal,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
