@@ -1,26 +1,55 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 
 class SearchPlacePage extends StatefulWidget {
-  const SearchPlacePage({super.key});
+  const SearchPlacePage({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final double latitude;
+  final double longitude;
 
   @override
   State<SearchPlacePage> createState() => _SearchPlacePageState();
 }
 
 class _SearchPlacePageState extends State<SearchPlacePage> {
-  late List<String> _placeSuggestions;
+  List<String> _placeSuggestions = [];
+  Timer? _inputChangedCallbackTimer;
 
   @override
   void initState() {
     super.initState();
-    _placeSuggestions = [
-      "Place 1",
-      "Place 2",
-      "Place 3",
-      "Place 4",
-      "Place 5",
-    ];
   }
+
+
+  void updateSuggestionsWithInput(String input) {
+    _inputChangedCallbackTimer?.cancel();
+
+      _inputChangedCallbackTimer = Timer(Duration(milliseconds: 800), () async {
+        try {
+          var url = Uri.parse("https://photon.komoot.io/api/?q=$input&lat=${widget.latitude}&lon=${widget.longitude}&limit=5");
+          var res = await http.get(url);
+          Map<String, dynamic> json = jsonDecode(res.body);
+          _placeSuggestions.clear();
+          for (var feature in json["features"]) {
+            _placeSuggestions.add(feature["properties"]["name"]);
+          }
+
+          setState(() {
+            _placeSuggestions = _placeSuggestions;
+          });
+        } catch (_) {
+          return;
+        }
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +72,9 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                   const SizedBox(width: 12.0),
                   Expanded(
                     child: TextField(
+                      onChanged: (value) => {
+                        updateSuggestionsWithInput(value)
+                      },
                       cursorColor: Colors.white,
                       style: const TextStyle(
                         color: Colors.white,
