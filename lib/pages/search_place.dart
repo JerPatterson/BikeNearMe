@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bike_near_me/entities/place_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,7 +20,7 @@ class SearchPlacePage extends StatefulWidget {
 }
 
 class _SearchPlacePageState extends State<SearchPlacePage> {
-  List<String> _placeSuggestions = [];
+  List<PlaceItem> _placeSuggestions = [];
   Timer? _inputChangedCallbackTimer;
 
   @override
@@ -37,8 +38,8 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
           var res = await http.get(url);
           Map<String, dynamic> json = jsonDecode(res.body);
           _placeSuggestions.clear();
-          for (var feature in json["features"]) {
-            _placeSuggestions.add(feature["properties"]["name"]);
+          for (var item in json["features"]) {
+            _placeSuggestions.add(PlaceItem.fromJson(item));
           }
 
           setState(() {
@@ -140,7 +141,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                           children: [
                             const SizedBox(height: 8.0),
                             Text(
-                              _placeSuggestions[index],
+                              _placeSuggestions[index].name,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -148,7 +149,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                               ),
                             ),
                             Text(
-                              _placeSuggestions[index],
+                              _placeSuggestions[index].subName,
                               style: const TextStyle(
                                 color: Color(0xF0000000),
                                 fontSize: 12,
