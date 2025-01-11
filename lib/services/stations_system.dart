@@ -10,6 +10,8 @@ import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+const maxTimeDiffWithLastReported = 604800;
+
 
 class StationsSystem {
   StationsSystem._create({
@@ -58,10 +60,13 @@ class StationsSystem {
   final Map<String, StationInformation> stationsInformationByStationIds = {};
   final Map<String, String> propulsionByVehicleTypeId = {};
 
+  int lastUpdated = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
 
   void _initDataRefresh() {
     Timer.periodic(const Duration(seconds: 30), (_) {
       _setStationsStatus();
+      lastUpdated = (DateTime.now().millisecondsSinceEpoch / 1000).round();
     });
   }
 
@@ -86,6 +91,15 @@ class StationsSystem {
     return systemAvailability?.getStationAvailability(stationId);
   }
 
+  bool isRenting(String stationId) {
+    var stationStatus = stationsStatusByStationIds[stationId];
+    return (lastUpdated - stationStatus!.lastReported) < maxTimeDiffWithLastReported && stationStatus.isRenting;
+  }
+
+  bool isReturning(String stationId) {
+    var stationStatus = stationsStatusByStationIds[stationId];
+    return (lastUpdated - stationStatus!.lastReported) < maxTimeDiffWithLastReported && stationStatus.isReturning;
+  }
 
   int getStationAvailability(String stationId, bool showDockAvailability) {
     var stationStatus = stationsStatusByStationIds[stationId];

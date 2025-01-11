@@ -20,6 +20,8 @@ class StationList extends StatelessWidget {
       for (StationInformation stationInformation in stationsSystem.getStationsInformation()) {
         final double distance = getDistance(latitude, longitude, stationInformation.lat, stationInformation.lon);
         if (distance > maxDistanceToDisplay) continue;
+        if (showDockAvailability && !stationsSystem.isReturning(stationInformation.id)) continue;
+        if (!showDockAvailability && !stationsSystem.isRenting(stationInformation.id)) continue;
         _stationListTiles.add(
           StationListTile(
             distance: distance,

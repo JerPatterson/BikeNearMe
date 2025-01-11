@@ -25,7 +25,7 @@ class StationStatus {
   bool isInstalled;
   bool isRenting;
   bool isReturning;
-  int? lastReported;
+  int lastReported;
 
   factory StationStatus.fromJson(Map<String, dynamic> json) => StationStatus(
     id: json['station_id'].toString(),
@@ -36,10 +36,10 @@ class StationStatus {
     numDocksDisabled: json['num_docks_disabled'] ?? 0,
     vehicleTypesAvailable: json['vehicle_types_available'] != null
       ? StationStatus._vehicleTypesAvailabilityFromJson(json['vehicle_types_available']) : [],
-    isInstalled: json['is_installed'] == 1,
-    isRenting: json['is_renting'] == 1,
-    isReturning: json['is_returning'] == 1,
-    lastReported: json['last_reported'],
+    isInstalled: json['is_installed'] == true || json['is_installed'] == 1,
+    isRenting: json['is_renting'] == true || json['is_renting'] == 1,
+    isReturning: json['is_returning'] == true || json['is_returning'] == 1,
+    lastReported: json['last_reported'] ?? 0,
   );
 
   static List<VehicleTypeAvailability> _vehicleTypesAvailabilityFromJson(list) => List<VehicleTypeAvailability>.from(

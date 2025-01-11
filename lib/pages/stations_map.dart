@@ -284,7 +284,11 @@ class _StationsMapPageState extends State<StationsMapPage> {
                 stationInformation.id,
                 _typeNotDisplayed == "vélos",
               ),
-              color: stationsSystem.color,
+              color: (
+                _typeNotDisplayed == "vélos" && stationsSystem.isReturning(stationInformation.id) 
+                  || _typeNotDisplayed == "places" && stationsSystem.isRenting(stationInformation.id) 
+                    ? stationsSystem.color : Colors.grey
+              ),
               size: stationMarkerIconSize,
             ),
           ],
