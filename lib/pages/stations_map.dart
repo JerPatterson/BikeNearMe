@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -53,6 +54,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
   double _userLatitude = initialCenter.latitude;
   double _userLongitude = initialCenter.longitude;
   bool _userLocationProvided = false;
+  late SharedPreferences prefs;
 
   List<Marker> _markers = [];
   List<StationsSystem> _stationsSystems = [];
@@ -72,9 +74,22 @@ class _StationsMapPageState extends State<StationsMapPage> {
   @override
   void initState() {
     super.initState();
+    initLocation();
     initUserLocation();
   }
 
+
+  void initLocation() async {
+    prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey("latitude") && prefs.containsKey("longitude")) {
+      _latitude = prefs.getDouble("latitude")!;
+      _longitude = prefs.getDouble("longitude")!;
+      _mapController.move(LatLng(_latitude, _longitude), initialZoom);
+    } else {
+      _latitude = initialCenter.latitude;
+      _longitude = initialCenter.longitude;
+    }
+  }
 
   void initUserLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -116,7 +131,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
       updateMapWithPosition(
         MapCamera(
           crs: Epsg3857(),
-          center: initialCenter,
+          center: _mapController.camera.center,
           zoom: initialZoom,
           rotation: 0.0,
           nonRotatedSize: Point(0.0, 0.0)
@@ -144,6 +159,8 @@ class _StationsMapPageState extends State<StationsMapPage> {
           _longitude = position.center.longitude;
         });
         updateMapLocationText();
+        prefs.setDouble("latitude", _latitude);
+        prefs.setDouble("longitude", _longitude);
 
         _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
         _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
@@ -289,37 +306,6 @@ class _StationsMapPageState extends State<StationsMapPage> {
     } catch (_) {
       return;
     }
-  }
-
-  void updateMapCenterPositionIfCloseToUser() {
-    double zoom = _mapController.camera.zoom;
-    double latOffset = calculateLatitudeOffset(zoom);
-    double lonOffset = calculateLongitudeOffset(zoom, _userLatitude);
-
-    if (_userLatitude - latOffset <= _latitude && _userLatitude + latOffset >= _latitude &&
-        _userLongitude - lonOffset <= _longitude && _userLongitude + lonOffset >= _longitude) {
-      _mapController.move(LatLng(_userLatitude, _userLongitude), zoom);
-      _mapAtUserLocation = true;
-    }
-  }
-
-  double calculateLatitudeOffset(double zoom) {
-    // Approximate meters per pixel at equator for the given zoom level
-    const double earthCircumference = 40075016.686; // in meters
-    const int tileSize = 256; // pixels
-    double metersPerPixel = earthCircumference / (tileSize * pow(2, zoom));
-    
-    // Latitude degrees per meter
-    return metersPerPixel / 111320; // 1 degree latitude = ~111.32 km
-  }
-
-  double calculateLongitudeOffset(double zoom, double latitude) {
-    const double earthCircumference = 40075016.686; // in meters
-    const int tileSize = 256; // pixels
-    double metersPerPixel = earthCircumference / (tileSize * pow(2, zoom));
-    
-    // Longitude degrees per meter (adjusted by latitude)
-    return metersPerPixel / (111320 * cos(latitude * pi / 180));
   }
 
   void updateNbOfStations(int numberOfStations, Color lastColor) {
