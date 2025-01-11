@@ -48,4 +48,19 @@ class PlaceItem {
     longitude: json["geometry"]["coordinates"][0],
     latitude: json["geometry"]["coordinates"][1],
   );
+
+  static Map<String, dynamic> toMap(PlaceItem item) => {
+    "properties": {
+      "name": item.name,
+      "country": item.country,
+      "state": item.state,
+      "city": item.city,
+      "street": item.street,
+      "housenumber": item.houseNumber,
+      "type": item.type,
+    },
+    "geometry": {
+      "coordinates": [item.longitude, item.latitude],
+    },
+  };
 }
