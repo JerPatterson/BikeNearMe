@@ -471,7 +471,11 @@ class _StationsMapPageState extends State<StationsMapPage> {
                                         longitude: _longitude,
                                       ),
                                     ),
-                                  );
+                                  ).then((placeItem) {
+                                    if (placeItem != null) {
+                                      _mapController.move(LatLng(placeItem.latitude, placeItem.longitude), initialZoom);
+                                    }
+                                  });
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
@@ -499,7 +503,11 @@ class _StationsMapPageState extends State<StationsMapPage> {
                                           longitude: _longitude,
                                         ),
                                       ),
-                                    );
+                                    ).then((placeItem) {
+                                      if (placeItem != null) {
+                                        _mapController.move(LatLng(placeItem.latitude, placeItem.longitude), initialZoom);
+                                      }
+                                    });
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
