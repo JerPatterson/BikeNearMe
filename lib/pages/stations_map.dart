@@ -433,7 +433,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                               latitude: _latitude,
                               longitude: _longitude,
                               stationsSystems: _stationsSystems,
-                              showDockAvailability: _typeNotDisplayed == "bikes",
+                              showDockAvailability: _typeNotDisplayed == "vélos",
                             ),
                           ),
                         ),
