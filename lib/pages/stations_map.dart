@@ -23,8 +23,7 @@ import 'package:http/http.dart' as http;
 
 const minZoom = 8.0;
 const maxZoom = 20.0;
-const maxOffset = 0.001;
-const minOffset = 0.00001;
+const minOffset = 0.00000001;
 const initialZoom = 14.0;
 const initialCenter = LatLng(45.504789, -73.613187);
 
@@ -149,7 +148,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
         _latitudeRounded = double.parse(_latitude.toStringAsFixed(1));
         _longitudeRounded = double.parse(_longitude.toStringAsFixed(1));
         if (_isKnownPosition(_latitudeRounded, _longitudeRounded) ) {
-          double offset = maxOffset - ((_mapController.camera.zoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
+          double offset = minOffset * pow(2, _mapController.camera.zoom);
           if (_userLatitude - offset <= _latitude && _userLatitude + offset >= _latitude
               && _userLongitude - offset <= _longitude && _userLongitude + offset >= _longitude) {
             _mapController.move(LatLng(_userLatitude, _userLongitude), _mapController.camera.zoom);
@@ -290,6 +289,37 @@ class _StationsMapPageState extends State<StationsMapPage> {
     } catch (_) {
       return;
     }
+  }
+
+  void updateMapCenterPositionIfCloseToUser() {
+    double zoom = _mapController.camera.zoom;
+    double latOffset = calculateLatitudeOffset(zoom);
+    double lonOffset = calculateLongitudeOffset(zoom, _userLatitude);
+
+    if (_userLatitude - latOffset <= _latitude && _userLatitude + latOffset >= _latitude &&
+        _userLongitude - lonOffset <= _longitude && _userLongitude + lonOffset >= _longitude) {
+      _mapController.move(LatLng(_userLatitude, _userLongitude), zoom);
+      _mapAtUserLocation = true;
+    }
+  }
+
+  double calculateLatitudeOffset(double zoom) {
+    // Approximate meters per pixel at equator for the given zoom level
+    const double earthCircumference = 40075016.686; // in meters
+    const int tileSize = 256; // pixels
+    double metersPerPixel = earthCircumference / (tileSize * pow(2, zoom));
+    
+    // Latitude degrees per meter
+    return metersPerPixel / 111320; // 1 degree latitude = ~111.32 km
+  }
+
+  double calculateLongitudeOffset(double zoom, double latitude) {
+    const double earthCircumference = 40075016.686; // in meters
+    const int tileSize = 256; // pixels
+    double metersPerPixel = earthCircumference / (tileSize * pow(2, zoom));
+    
+    // Longitude degrees per meter (adjusted by latitude)
+    return metersPerPixel / (111320 * cos(latitude * pi / 180));
   }
 
   void updateNbOfStations(int numberOfStations, Color lastColor) {
