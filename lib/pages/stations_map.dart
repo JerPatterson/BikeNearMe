@@ -473,6 +473,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                                       pageBuilder: (_, __, ___) => SearchPlacePage(
                                         latitude: _latitude,
                                         longitude: _longitude,
+                                        systems: _systems.systems,
                                       ),
                                     ),
                                   ).then((placeItem) {
@@ -505,6 +506,7 @@ class _StationsMapPageState extends State<StationsMapPage> {
                                         pageBuilder: (_, __, ___) => SearchPlacePage(
                                           latitude: _latitude,
                                           longitude: _longitude,
+                                          systems: _systems.systems,
                                         ),
                                       ),
                                     ).then((placeItem) {

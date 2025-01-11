@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bike_near_me/entities/place_item.dart';
+import 'package:bike_near_me/entities/system.dart';
+import 'package:bike_near_me/icons/bike_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -11,10 +13,12 @@ class SearchPlacePage extends StatefulWidget {
     super.key,
     required this.latitude,
     required this.longitude,
+    required this.systems,
   });
 
   final double latitude;
   final double longitude;
+  final List<System> systems;
 
   @override
   State<SearchPlacePage> createState() => _SearchPlacePageState();
@@ -107,6 +111,74 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               ),
             ),
       
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                physics: const ClampingScrollPhysics(),
+                itemCount: widget.systems.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 18.0, 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop(widget.systems[index]);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.systems[index].color,
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 12.0),
+                            Text(
+                              String.fromCharCode(
+                                BikeShare.bike.codePoint,
+                              ),
+                              style: TextStyle(
+                                color: widget.systems[index].textColor,
+                                fontSize: 30.0,
+                                fontFamily:  BikeShare.bike.fontFamily,
+                                package:  BikeShare.bike.fontPackage,
+                              )
+                            ),
+                            const SizedBox(width: 12.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    widget.systems[index].name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: widget.systems[index].textColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.systems[index].locationName,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: widget.systems[index].textColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12.0),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
             if (_placeSuggestions.isNotEmpty) Padding(
               padding: const EdgeInsets.only(left: 18.0, top: 16.0),
               child: const Text(

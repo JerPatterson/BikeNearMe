@@ -4,6 +4,8 @@ import 'package:latlong2/latlong.dart';
 class System {
   System({
     required this.id,
+    required this.name,
+    required this.locationName,
     required this.minPosition,
     required this.maxPosition,
     required this.color,
@@ -11,11 +13,18 @@ class System {
     required this.stationStatusUrl,
     required this.stationInformationUrl,
     required this.vehicleTypesUrl,
-  });
+  }) {
+    longitude = (minPosition.longitude + maxPosition.longitude) / 2;
+    latitude = (minPosition.latitude + maxPosition.latitude) / 2;
+  }
 
   final String id;
+  final String name;
+  final String locationName;
   final LatLng minPosition;
   final LatLng maxPosition;
+  late double longitude;
+  late double latitude;
   final Color color;
   final Color textColor;
   final String stationStatusUrl;
@@ -24,6 +33,8 @@ class System {
 
   factory System.fromJson(Map<String, dynamic> json) => System(
     id: json['id'].toString(),
+    name: json['name'].toString(),
+    locationName: json['location_name'].toString(),
     minPosition: LatLng(json['min_lat'], json['min_lon']),
     maxPosition: LatLng(json['max_lat'], json['max_lon']),
     color: Color(int.parse(json['color'])),
