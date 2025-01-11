@@ -8,12 +8,27 @@ It allows the user to see how many bikes are available in a station in real-time
 Currently, some features are only accessible on a limited number of systems. However, they could be enabled on more systems by upgrading the backend services from the free tier, reducing the current limitations.
 
 #### Fully working for the following systems
-- [Bixi](https://bixi.com/) (Year round system)
-- [àVélo](https://aveloquebec.ca/) (Seasonal system)
-- [Accès Vélo](https://sts.saguenay.ca/infos-pratiques/acces-velo) (Seasonal system)
+- [Bixi](https://bixi.com/) (Montréal, QC)
+- [àVélo](https://aveloquebec.ca/) (Québec, QC) (Seasonal system)
+- [Accès Vélo](https://sts.saguenay.ca/infos-pratiques/acces-velo) (Saguenay, QC) (Seasonal system)
 
 #### Partially working for the following systems (No history of availability feature)
-- <em>Systems to be added...</em>
+- Canada
+    - [BikeShareToronto](https://bikesharetoronto.com/) (Toronto, ON)
+    - [SocialBikes](https://hamilton.socialbicycles.com/) (Hamilton, ON)
+
+- United States
+    - [CitiBike](https://citibikenyc.com/) (New York, NY)
+    - [CapitalBikeShare](https://capitalbikeshare.com/) (Washington, DC)
+    - [Bluebikes](https://bluebikes.com/) (Boston, MA)
+    - [Indego](https://www.rideindego.com/) (Philadelphia, PA)
+    - [DivvyBikes](https://divvybikes.com/) (Chicago, IL)
+    - [MoGo](https://mogodetroit.org/) (Detroit, MI)
+    - [CoGo](https://cogobikeshare.com/) (Colombus, OH)
+    - [BayWheels](https://www.lyft.com/bikes/bay-wheels) (San Francisco, CA)
+    - [MetroBikeShare](https://bikeshare.metro.net/) (Los Angeles, CA)
+    - [Biki](https://gobiki.org/) (Honolulu, HI)
+    - [HIBIKE](https://www.hawaiiislandbike.com/) (Island of Hawaii, HI)
 
 <em><b>Note:</b> This application is not affiliated with, endorsed or sponsored by these entities.</em>
 
@@ -40,7 +55,7 @@ Ensure you have an internet connection, as the application directly calls the sy
 
 ## Upcoming improvements
 
-- Making it possible to add systems dynamically in the database (if using the [GBFS](https://gbfs.org/) standard)
+- <strike>Making it possible to add systems dynamically in the database (if using the [GBFS](https://gbfs.org/) standard)</strike> <em>Done!</em>
 - Adding a price calculator by the time length that adapt for each systems
 - Making it work on screen where the width is bigger than the height
 - Adding non-bike station-based systems support
