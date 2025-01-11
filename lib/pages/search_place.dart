@@ -409,8 +409,6 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                                         color: const Color(0x40000000),
                                         thickness: 1.0,
                                       ),
-                                    if (recent == _recentSearchSuggestions.last)
-                                      const SizedBox(height: 16.0),
                                   ],
                                 ),
                               ),
@@ -421,6 +419,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                     );
                   }).toList(),
                 ),
+                const SizedBox(height: 16.0),
               ],
             ],
           ),
