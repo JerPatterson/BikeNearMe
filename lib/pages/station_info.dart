@@ -102,7 +102,9 @@ class _StationInfoPageState extends State<StationInfoPage> {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                retinaMode: RetinaMode.isHighDensity(context),
+                subdomains: ['a', 'b', 'c', 'd'],
                 userAgentPackageName: 'com.example.app',
                 tileProvider: CancellableNetworkTileProvider(),
               ),
