@@ -1,5 +1,6 @@
 class PlaceItem {
   PlaceItem({
+    required this.id,
     required this.name,
     required this.country,
     required this.state,
@@ -11,6 +12,7 @@ class PlaceItem {
     required this.latitude,
   });
 
+  final int id;
   final String name;
   final String country;
   final String? state;
@@ -38,6 +40,7 @@ class PlaceItem {
   }
   
   factory PlaceItem.fromJson(Map<String, dynamic> json) => PlaceItem(
+    id: json["properties"]["osm_id"],
     name: json["properties"]["name"],
     country: json["properties"]["country"],
     state: json["properties"]["state"],
@@ -51,6 +54,7 @@ class PlaceItem {
 
   static Map<String, dynamic> toMap(PlaceItem item) => {
     "properties": {
+      "osm_id": item.id,
       "name": item.name,
       "country": item.country,
       "state": item.state,

@@ -65,6 +65,11 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
     prefs.setStringList("recentSearches", _recentSearchSuggestions.map((item) => jsonEncode(PlaceItem.toMap(item))).toList());
   }
 
+  deleteRecentSearch(PlaceItem placeItem) {
+    _recentSearchSuggestions.remove(placeItem);
+    prefs.setStringList("recentSearches", _recentSearchSuggestions.map((item) => jsonEncode(PlaceItem.toMap(item))).toList());
+  }
+
   void updateSuggestionsWithInput(String input) {
     _inputChangedCallbackTimer?.cancel();
     updateSystemsSuggestions(input);
@@ -186,6 +191,13 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                             decoration: BoxDecoration(
                               color: system.color,
                               borderRadius: BorderRadius.circular(6.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: system.color.withAlpha(80),
+                                  blurRadius: 6,
+                                  spreadRadius: 3,
+                                )
+                              ],
                             ),
                             child: Row(
                               children: [
@@ -335,56 +347,75 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
                 ),
                 Column(
                   children: _recentSearchSuggestions.map((recent) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop(recent);
+                    return Dismissible(
+                      key: Key(recent.id.toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20.0),
+                        color: Colors.grey,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 24.0,
+                        ),
+                      ),
+                      onDismissed: (direction) {
+                        setState(() {
+                          deleteRecentSearch(recent);
+                        });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24.0, 0.0, 18.0, 0.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: Colors.black,
-                              size: 24.0,
-                            ),
-                            const SizedBox(width: 12.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 8.0),
-                                  Text(
-                                    recent.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    recent.subName,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Color(0xF0000000),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  if (recent != _recentSearchSuggestions.last)
-                                    Divider(
-                                      height: 1.0,
-                                      color: const Color(0x40000000),
-                                      thickness: 1.0,
-                                    ),
-                                  if (recent == _recentSearchSuggestions.last)
-                                    const SizedBox(height: 16.0),
-                                ],
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop(recent);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24.0, 0.0, 18.0, 0.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: Colors.black,
+                                size: 24.0,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 12.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      recent.name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      recent.subName,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Color(0xF0000000),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    if (recent != _recentSearchSuggestions.last)
+                                      Divider(
+                                        height: 1.0,
+                                        color: const Color(0x40000000),
+                                        thickness: 1.0,
+                                      ),
+                                    if (recent == _recentSearchSuggestions.last)
+                                      const SizedBox(height: 16.0),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
