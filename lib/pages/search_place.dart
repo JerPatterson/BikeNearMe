@@ -25,17 +25,20 @@ class SearchPlacePage extends StatefulWidget {
 }
 
 class _SearchPlacePageState extends State<SearchPlacePage> {
+  List<System> _systemsSuggestions = [];
   List<PlaceItem> _placeSuggestions = [];
   Timer? _inputChangedCallbackTimer;
 
   @override
   void initState() {
     super.initState();
+    _systemsSuggestions = widget.systems.sublist(0, 3);
   }
 
 
   void updateSuggestionsWithInput(String input) {
     _inputChangedCallbackTimer?.cancel();
+    updateSystemsSuggestions(input);
 
       _inputChangedCallbackTimer = Timer(Duration(milliseconds: 800), () async {
         try {
@@ -56,6 +59,25 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
       });
   }
 
+  updateSystemsSuggestions(String input) {
+    if (input.isEmpty) {
+      setState(() {
+        _systemsSuggestions = widget.systems.sublist(0, 3);
+      });
+      return;
+    }
+
+    var listFilterFromInput = widget.systems.where((element) {
+      return element.name.toLowerCase().contains(input.toLowerCase())
+        || element.locationName.toLowerCase().contains(input.toLowerCase());
+    }).toList();
+
+    setState(() {
+      _systemsSuggestions = listFilterFromInput.length > 3 
+        ? listFilterFromInput.sublist(0,  3) : listFilterFromInput;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +91,7 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
             Container(
               color: Colors.black,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 50.0, 16.0, 16.0),
+                padding: const EdgeInsets.fromLTRB(16.0, 50.0, 16.0, 0.0),
                 child: Row(
                   children: [
                     Icon(
@@ -111,72 +133,84 @@ class _SearchPlacePageState extends State<SearchPlacePage> {
               ),
             ),
       
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                physics: const ClampingScrollPhysics(),
-                itemCount: widget.systems.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 18.0, 10.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop(widget.systems[index]);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: widget.systems[index].color,
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        child: Row(
-                          children: [
-                            const SizedBox(width: 12.0),
-                            Text(
-                              String.fromCharCode(
-                                BikeShare.bike.codePoint,
+            Stack(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 16.0,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black
+                    ),
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _systemsSuggestions.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(24.0, 0.0, 18.0, 8.0),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop(_systemsSuggestions[index]);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: _systemsSuggestions[index].color,
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 12.0),
+                              Text(
+                                String.fromCharCode(
+                                  BikeShare.bike.codePoint,
+                                ),
+                                style: TextStyle(
+                                  color: _systemsSuggestions[index].textColor,
+                                  fontSize: 30.0,
+                                  fontFamily:  BikeShare.bike.fontFamily,
+                                  package:  BikeShare.bike.fontPackage,
+                                )
                               ),
-                              style: TextStyle(
-                                color: widget.systems[index].textColor,
-                                fontSize: 30.0,
-                                fontFamily:  BikeShare.bike.fontFamily,
-                                package:  BikeShare.bike.fontPackage,
-                              )
-                            ),
-                            const SizedBox(width: 12.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 8.0),
-                                  Text(
-                                    widget.systems[index].name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: widget.systems[index].textColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8.0),
+                                    Text(
+                                      _systemsSuggestions[index].name,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: _systemsSuggestions[index].textColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    widget.systems[index].locationName,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: widget.systems[index].textColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.normal,
+                                    Text(
+                                      _systemsSuggestions[index].locationName,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: _systemsSuggestions[index].textColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 12.0),
-                                ],
+                                    const SizedBox(height: 8.0),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+              ],
             ),
 
             if (_placeSuggestions.isNotEmpty) Padding(
