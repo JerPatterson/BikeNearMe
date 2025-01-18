@@ -47,9 +47,9 @@ The application is using a layout similar to the one of [Transit](https://transi
     <td>Station availability history view</td>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/bc0d4084-1b96-43dc-bd2c-c841559a3966" width=270></td>
-    <td><img src="https://github.com/user-attachments/assets/47a0f6b6-3d83-4eef-ada3-092fc1ec0c27" width=270></td>
-    <td><img src="https://github.com/user-attachments/assets/11bf40c2-cf43-40a8-92e5-9c6b2c3c9675" width=270></td>
+    <td><img src="https://github.com/user-attachments/assets/ec92e581-2a3c-44ce-ba99-53d5e857d21b" width=270/></td>
+    <td><img src="https://github.com/user-attachments/assets/cc823555-77b2-4041-9522-898f62a03ab8" width=270/></td>
+    <td><img src="https://github.com/user-attachments/assets/11705eaa-eaa7-4207-bef7-50f2f4c1a029" width=270/></td>
   </tr>
 </table>
 
