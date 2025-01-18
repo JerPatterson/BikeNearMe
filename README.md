@@ -15,6 +15,7 @@ Currently, some features are only accessible on a limited number of systems. How
 
 #### Partially working for the following systems (No history of availability feature)
 - Canada
+    - [mobi](https://www.mobibikes.ca/) (Vancouver, BC)
     - [SocialBikes](https://hamilton.socialbicycles.com/) (Hamilton, ON)
 
 - United States
@@ -29,6 +30,9 @@ Currently, some features are only accessible on a limited number of systems. How
     - [MetroBikeShare](https://bikeshare.metro.net/) (Los Angeles, CA)
     - [Biki](https://gobiki.org/) (Honolulu, HI)
     - [HIBIKE](https://www.hawaiiislandbike.com/) (Island of Hawaii, HI)
+ 
+- France
+    - [Vélib](https://www.velib-metropole.fr/) (Paris)
 
 <em><b>Note:</b> This application is not affiliated with, endorsed or sponsored by these entities.</em>
 
@@ -51,7 +55,7 @@ The application is using a layout similar to the one of [Transit](https://transi
 
 ## How to use
 
-Ensure you have an internet connection, as the application directly calls the system API to retrieve its station data. Then, you simply have to open the app, if the region you are in have stations you will see them in a list that you can scroll in if there is a lot. Each station is clickable and you will see information about it. As stated above, on the station view some systems allow to view the history of availability through a button.
+Ensure you have an internet connection, as the application directly calls the system API to retrieve its station data (for cost reasons otherwise a server would be great). Then, you simply have to open the app, if the region you are in have stations you will see them in a list that you can scroll in if there is a lot. Each station is clickable and you will see information about it. As stated above, on the station view some systems allow to view the history of availability through a button.
 
 ## Upcoming improvements
 
