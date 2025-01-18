@@ -11,10 +11,10 @@ Currently, some features are only accessible on a limited number of systems. How
 - [Bixi](https://bixi.com/) (Montréal, QC)
 - [àVélo](https://aveloquebec.ca/) (Québec, QC) (Seasonal system)
 - [Accès Vélo](https://sts.saguenay.ca/infos-pratiques/acces-velo) (Saguenay, QC) (Seasonal system)
+- [BikeShareToronto](https://bikesharetoronto.com/) (Toronto, ON)
 
 #### Partially working for the following systems (No history of availability feature)
 - Canada
-    - [BikeShareToronto](https://bikesharetoronto.com/) (Toronto, ON)
     - [SocialBikes](https://hamilton.socialbicycles.com/) (Hamilton, ON)
 
 - United States
